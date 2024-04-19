@@ -11,7 +11,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-// npx shadcn-ui@latest add dropdown-menu
 // 
 export function ModeToggle() {
   const { setTheme } = useTheme()

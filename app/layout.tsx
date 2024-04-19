@@ -40,6 +40,19 @@ export default function RootLayout({
         <main className="min-h-screen flex flex-col items-center">
           {children}
         </main>
+        <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
+          <p>
+            Powered by{" "}
+            <a
+              href="https://credo-innovation.ca"
+              target="_blank"
+              className="font-bold hover:underline"
+              rel="noreferrer"
+            >
+              Crédo Innovation Inc.
+            </a>
+          </p>
+        </footer>
           </ThemeProvider>
       </body>
     </html>

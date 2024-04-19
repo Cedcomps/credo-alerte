@@ -1,5 +1,3 @@
-import DeployButton from "../components/DeployButton";
-import AuthButton from "../components/AuthButton";
 import { createClient } from "@/utils/supabase/server";
 import Header from "@/components/Header";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -14,6 +12,7 @@ export default async function Index() {
       return false;
     }
   };
+  console.log('Rendering on the server');
 
   const isSupabaseConnected = canInitSupabaseClient();
 
@@ -21,9 +20,9 @@ export default async function Index() {
     <div className="flex-1 w-full flex flex-col gap-20 items-center">
       <Navbar />
 
-      <div className="animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
+      <div className="mt-28 animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
         <Header />
-        <main className="flex-1 flex flex-col gap-6">
+        <div className="flex-1 flex flex-col gap-6">
           <section className="features">
             <h2 className="text-4xl font-bold mb-8">Key Features</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -85,22 +84,10 @@ export default async function Index() {
   </Accordion>
 </section>
 
-        </main>
+        </div>
       </div>
 
-      <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
-        <p>
-          Powered by{" "}
-          <a
-            href="https://credo-innovation.ca"
-            target="_blank"
-            className="font-bold hover:underline"
-            rel="noreferrer"
-          >
-            Crédo Innovation Inc.
-          </a>
-        </p>
-      </footer>
+     
     </div>
   );
 }

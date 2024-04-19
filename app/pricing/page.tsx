@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 
     export default function Pricing() {
     return (
-        <><Navbar /><div className="container mx-auto px-4 py-10">
+        <><Navbar />
+        <div className="mt-28 container mx-auto px-4 py-10">
             <div className="mx-auto max-w-4xl text-center">
                 <h2 className="text-3xl font-bold mb-4">Pricing</h2>
                 <p className="text-xl mb-8">Choose the plan that fits your needs</p>
