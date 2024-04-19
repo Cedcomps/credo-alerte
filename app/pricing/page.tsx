@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                             </svg>
-                            Up to 100 contacts
+                            Up to 20 contacts
                         </li>
                         <li className="flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -44,7 +44,7 @@ import { Button } from "@/components/ui/button";
                             Community support
                         </li>
                     </ul>
-                    <Button className="w-full">Get Started</Button>
+                    <Button className="w-full">Free Forever</Button>
                 </div>
                 <div className="border border-gray-200 rounded-lg shadow-md p-6">
                     <h3 className="text-2xl font-semibold mb-4">Pro</h3>
@@ -93,7 +93,7 @@ import { Button } from "@/components/ui/button";
                             30-day free trial
                         </li>
                     </ul>
-                    <Button className="w-full">Buy Now</Button>
+                    <Button className="w-full">Start a 14-day free trial</Button>
                 </div>
                 <div className="border border-gray-200 rounded-lg shadow-md p-6">
                     <h3 className="text-2xl font-semibold mb-4">Enterprise</h3>

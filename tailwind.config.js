@@ -8,12 +8,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        btn: {
-          background: "hsl(var(--btn-background))",
-          "background-hover": "hsl(var(--btn-background-hover))",
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
         },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        // background: "hsl(var(--background))",
+        // foreground: "hsl(var(--foreground))",
+        // btn: {
+        //   background: "hsl(var(--btn-background))",
+        //   "background-hover": "hsl(var(--btn-background-hover))",
+        // },
         // fontFamily: {
         //   sans: ["var(--font-sans)", ...fontFamily.sans],
         // },
