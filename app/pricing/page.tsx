@@ -1,4 +1,4 @@
-    import Navbar from "@/components/Nav";
+import Navbar from "@/components/Nav";
 import { Button } from "@/components/ui/button";
 
     export default function Pricing() {
