@@ -1,14 +1,15 @@
-// // components/DashboardAside.tsx
+'use client';
 
-
-// components/DashboardAside.tsx
-import { LineChart, Package, Aperture, Settings } from "lucide-react"
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
-import { Bell, Gem, BookUser, Home } from "lucide-react"
-import Link from "next/link"
-import UpgradePro from "../UpgradePro"
+import { LineChart, Package, Aperture, Settings } from "lucide-react";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Bell, Gem, BookUser, Home } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from 'next/navigation';
+import UpgradePro from "../UpgradePro";
 
 export default function DashboardAside() {
+  const pathname = usePathname();
+
   return (
     <TooltipProvider>
       <aside className="group fixed inset-y-0 left-0 z-40 hidden w-14 flex-col border-r bg-background transition-all duration-300 ease-in-out hover:w-56 sm:flex ">
@@ -24,7 +25,11 @@ export default function DashboardAside() {
             <TooltipTrigger asChild>
               <Link
                 href="/dashboard"
-                className="ml-2 group flex items-center justify-start rounded-lg text-muted-foreground transition-colors hover:text-foreground "
+                className={`ml-2 group flex items-center justify-start rounded-md transition-colors ${
+                  pathname === '/dashboard'
+                    ? 'bg-accent text-accent-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
                 <Home className="h-5 w-5 mr-2" />
                 <span className="hidden group-hover:inline">Dashboard</span>
@@ -36,7 +41,11 @@ export default function DashboardAside() {
             <TooltipTrigger asChild>
               <Link
                 href="/dashboard/alarms"
-                className="ml-2 h-9  group flex items-center justify-start rounded-lg bg-accent text-accent-foreground transition-colors hover:bg-accent-focus "
+                className={`ml-2 group flex items-center justify-start rounded-md transition-colors ${
+                  pathname.startsWith('/dashboard/alarms')
+                    ? 'bg-accent text-accent-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
                 <Bell className="h-5 w-5 mr-2" />
                 <span className="hidden group-hover:inline">Alarms</span>
@@ -48,7 +57,7 @@ export default function DashboardAside() {
             <TooltipTrigger asChild>
               <Link
                 href="#"
-                className="ml-2 flex items-center justify-start rounded-lg text-muted-foreground transition-colors hover:text-foreground"
+                className="ml-2 flex items-center justify-start rounded-md text-muted-foreground transition-colors hover:text-foreground"
               >
                 <Package className="h-5 w-5 mr-2" />
                 <span className="hidden group-hover:inline">Products</span>
@@ -60,7 +69,7 @@ export default function DashboardAside() {
             <TooltipTrigger asChild>
               <Link
                 href="#"
-                className="ml-2 flex items-center justify-start rounded-lg text-muted-foreground transition-colors hover:text-foreground"
+                className="ml-2 flex items-center justify-start rounded-md text-muted-foreground transition-colors hover:text-foreground"
               >
                 <BookUser className="h-5 w-5 mr-2" />
                 <span className="hidden group-hover:inline">Directory</span>
@@ -72,7 +81,7 @@ export default function DashboardAside() {
             <TooltipTrigger asChild>
               <Link
                 href="#"
-                className="ml-2 flex items-center justify-start rounded-lg text-muted-foreground transition-colors hover:text-foreground"
+                className="ml-2 flex items-center justify-start rounded-md text-muted-foreground transition-colors hover:text-foreground"
               >
                 <LineChart className="h-5 w-5 mr-2" />
                 <span className="hidden group-hover:inline">Analytics</span>
@@ -83,14 +92,19 @@ export default function DashboardAside() {
         </nav>
         {/* Gem add icon */}
         <nav className="mt-auto flex flex-col items-start gap-4 px-2 sm:py-5">
-          <div >
-            <UpgradePro/>
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="hidden group-hover:inline items-baseline justify-start">
+                <UpgradePro />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="right">Benefit from all the features</TooltipContent>
+          </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
-                className="ml-2 flex items-center justify-start rounded-lg text-muted-foreground transition-colors hover:text-foreground"
+                href="/dashboard/settings"
+                className="ml-2 flex items-center justify-start rounded-md text-muted-foreground transition-colors hover:text-foreground"
               >
                 <Settings className="h-5 w-5 mr-2" />
                 <span className="hidden group-hover:inline">Settings</span>

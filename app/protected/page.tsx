@@ -8,8 +8,11 @@ export default async function ProtectedPage() {
   const supabase = createClient();
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { user }, error
+  } = await supabase.auth.getUser()
+  if (error || !user?.email) {
+    redirect('/login')
+  };
 
   if (!user) {
     return redirect("/login");
@@ -23,10 +26,7 @@ export default async function ProtectedPage() {
           user
         </div>
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
-            <DeployButton />
-            <AuthButton />
-          </div>
+        <p>Hello {user.email}</p>
         </nav>
       </div>
 

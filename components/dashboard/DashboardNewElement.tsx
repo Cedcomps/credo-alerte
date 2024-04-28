@@ -34,7 +34,7 @@ export default function DashboardNewElement({ menuName }: DashboardNewElementPro
   }
 
   return (
-    <Card className="sm:col-span-2">
+    <Card >
       <CardHeader className="pb-3">
         <CardTitle>{title}</CardTitle>
         <CardDescription className="max-w-lg text-balance leading-relaxed">

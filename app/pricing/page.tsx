@@ -1,5 +1,7 @@
 import Navbar from "@/components/Nav";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge"
+
 
     export default function Pricing() {
     return (
@@ -47,8 +49,11 @@ import { Button } from "@/components/ui/button";
                     </ul>
                     <Button className="w-full">Free Forever</Button>
                 </div>
-                <div className="border border-gray-200 rounded-lg shadow-md p-6">
-                    <h3 className="text-2xl font-semibold mb-4">Pro</h3>
+                <div className="border border-primary input rounded-lg shadow-md p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-2xl font-semibold">Pro</h3>
+                        <Badge>Most purchased</Badge>
+                    </div>
                     <p className="text-gray-500 mb-4">$49/month</p>
                     <ul className="text-left mb-6 space-y-2">
                         <li className="flex items-center">
