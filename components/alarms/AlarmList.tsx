@@ -1,7 +1,6 @@
 'use client'
-import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-
+import React, { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -36,7 +35,7 @@ export default function AlarmList(){
     const [alarms, setAlarms] = useState<any[]>([]);
     const [filter, setFilter] = useState('all');
     const [sortBy, setSortBy] = useState('last_updated');
-    
+
     const handleSortByChange = (value: string) => {
         setSortBy(value);
     };
@@ -105,48 +104,43 @@ export default function AlarmList(){
     const openAlarm = async (alarmId: string, alarmName: string) => {
         router.push(`/dashboard/alarms/${alarmId}?name=${encodeURIComponent(alarmName)}`);
       };
-      
-      
-      const duplicateAlarm = async (alarmId: string) => {
-        const { data: alarm, error } = await supabase
-          .from('alarms')
-          .select('*')
-          .eq('id', alarmId)
-          .single();
-      
-        if (error) {
-          console.error('Error fetching alarm:', error);
-          return;
-        }
-      
-        // Générer un nouvel ID unique compatible avec bigint
-        const { data: maxIdResult, error: maxIdError } = await supabase
-          .from('alarms')
-          .select('id')
-          .order('id', { ascending: false })
-          .limit(1)
-          .single();
-      
-        if (maxIdError) {
-          console.error('Error fetching max ID:', maxIdError);
-          return;
-        }
-      
-        const newAlarmId = maxIdResult ? maxIdResult.id + 1 : 1;
-      
-        const { data: duplicatedAlarm, error: insertError } = await supabase
-          .from('alarms')
-          .insert({ ...alarm, id: newAlarmId, alarm_name: `${alarm.alarm_name} (copy)` })
-          .select('*')
-          .single();
-      
-        if (insertError) {
-          console.error('Error duplicating alarm:', insertError);
-        } else {
-          setAlarms([...alarms, duplicatedAlarm]);
-        }
-      };
-      
+    const duplicateAlarm = async (alarmId: string) => {
+    const { data: alarm, error } = await supabase
+        .from('alarms')
+        .select('*')
+        .eq('id', alarmId)
+        .single();
+    
+    if (error) {
+        console.error('Error fetching alarm:', error);
+        return;
+    }
+    
+    // Générer un nouvel ID unique avec uuid
+    const newAlarmId = uuidv4();
+    
+    // Obtenir la date et l'heure actuelles au format ISO 8601
+    const now = new Date().toISOString();
+    
+    const { data: duplicatedAlarm, error: insertError } = await supabase
+        .from('alarms')
+        .insert({ 
+        ...alarm, 
+        id: newAlarmId, 
+        alarm_name: `${alarm.alarm_name} (copy)`,
+        created_at: now,
+        updated_at: now
+        })
+        .select('*')
+        .single();
+    
+    if (insertError) {
+        console.error('Error duplicating alarm:', insertError);
+    } else {
+        setAlarms([...alarms, duplicatedAlarm]);
+    }
+    };
+       
       const deleteAlarm = async (alarmId: string) => {
         // Logique pour supprimer l'alarme avec l'ID spécifié
         const { error } = await supabase
@@ -160,6 +154,10 @@ export default function AlarmList(){
           setAlarms(alarms.filter((alarm) => alarm.id !== alarmId));
         }
       };
+
+    function onAlarmClick(id: any): void {
+        throw new Error("Function not implemented.");
+    }
 
     return (
         <Tabs defaultValue="all" onValueChange={(value) => setFilter(value)}>
@@ -244,7 +242,9 @@ export default function AlarmList(){
                             </TableHeader>
                             <TableBody>
                                 {filteredAlarms.map((alarm) => (
-                                    <TableRow key={alarm.id}>
+                                    <TableRow
+                                    key={alarm.id}
+                                  >                                     
                                         <TableCell>
                                             <div className="font-medium">{alarm.alarm_name}</div>
                                             <div className="hidden text-sm text-muted-foreground md:inline">
@@ -319,7 +319,9 @@ export default function AlarmList(){
                             </TableHeader>
                             <TableBody>
                                 {filteredAlarms.map((alarm) => (
-                                    <TableRow key={alarm.id}>
+                                    <TableRow
+                                    key={alarm.id}
+                                  >
                                         <TableCell>
                                             <div className="font-medium">{alarm.alarm_name}</div>
                                             <div className="hidden text-sm text-muted-foreground md:inline">
@@ -395,7 +397,9 @@ export default function AlarmList(){
                             </TableHeader>
                             <TableBody>
                                 {filteredAlarms.map((alarm) => (
-                                    <TableRow key={alarm.id}>
+                                    <TableRow
+                                    key={alarm.id}
+                                  >
                                         <TableCell>
                                             <div className="font-medium">{alarm.alarm_name}</div>
                                             <div className="hidden text-sm text-muted-foreground md:inline">
