@@ -1,4 +1,5 @@
 // components/Header.tsx
+'use client'
 import Link from 'next/link';
 import { CircleUserRound } from 'lucide-react';
 import { Bell, BookUser, Home, LineChart, Package, Package2, Search } from 'lucide-react';
@@ -15,8 +16,27 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import { PanelLeft } from 'lucide-react';
 import DashboardBreadcrumb from './DashboardBreadcrumb';
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/utils/supabase/client'
+
 
 export default function DashboardHeader() {
+  const router = useRouter()
+const supabase = createClient()
+
+const handleLogout = async () => {
+  try {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('Error signing out:', error)
+    } else {
+      router.push('/login')
+    }
+  } catch (error) {
+    console.error('Error signing out:', error)
+  }
+}
+
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Sheet>
@@ -99,7 +119,7 @@ export default function DashboardHeader() {
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

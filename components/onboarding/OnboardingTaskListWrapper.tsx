@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import OnboardingTaskList from './OnboardingTaskList';
+import AddOnboardingTasks from './AddOnboardingTasks';
 
 type Task = {
   id: number;
@@ -25,7 +26,8 @@ export default async function OnboardingTaskListWrapper() {
         )
       `
       )
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .order('onboarding_task_id', { ascending: true }); // Ajout de la clause ORDER BY
 
     if (!error && data) {
       tasks = data.map((task: any) => ({
@@ -36,5 +38,21 @@ export default async function OnboardingTaskListWrapper() {
     }
   }
 
-  return <OnboardingTaskList tasks={tasks} />;
+  const updateTask = async (taskId: number, completed: boolean) => {
+    "use server";
+    if (user) {
+      await supabase
+        .from('user_onboarding_tasks')
+        .update({ completed })
+        .eq('user_id', user.id)
+        .eq('onboarding_task_id', taskId);
+    }
+  };
+
+  return (
+    <>
+      <OnboardingTaskList tasks={tasks} updateTask={updateTask} />
+      <AddOnboardingTasks />
+    </>
+  );
 }

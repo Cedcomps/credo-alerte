@@ -30,7 +30,12 @@ import AlarmSwitch from "@/components/alarms/AlarmSwitch";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from 'next/navigation';
 
-export default function AlarmList(){
+interface AlarmListProps {
+    onAlarmClick: (alarm: any) => void;
+  }
+
+  
+  export default function AlarmList({ onAlarmClick }: AlarmListProps) {
     const supabase = createClient()
     const [alarms, setAlarms] = useState<any[]>([]);
     const [filter, setFilter] = useState('all');
@@ -154,10 +159,7 @@ export default function AlarmList(){
           setAlarms(alarms.filter((alarm) => alarm.id !== alarmId));
         }
       };
-
-    function onAlarmClick(id: any): void {
-        throw new Error("Function not implemented.");
-    }
+    
 
     return (
         <Tabs defaultValue="all" onValueChange={(value) => setFilter(value)}>
@@ -244,7 +246,8 @@ export default function AlarmList(){
                                 {filteredAlarms.map((alarm) => (
                                     <TableRow
                                     key={alarm.id}
-                                  >                                     
+                                    onClick={() => onAlarmClick(alarm)}
+                                  >                
                                         <TableCell>
                                             <div className="font-medium">{alarm.alarm_name}</div>
                                             <div className="hidden text-sm text-muted-foreground md:inline">
@@ -321,6 +324,7 @@ export default function AlarmList(){
                                 {filteredAlarms.map((alarm) => (
                                     <TableRow
                                     key={alarm.id}
+                                    onClick={() => onAlarmClick(alarm)}
                                   >
                                         <TableCell>
                                             <div className="font-medium">{alarm.alarm_name}</div>
@@ -399,6 +403,7 @@ export default function AlarmList(){
                                 {filteredAlarms.map((alarm) => (
                                     <TableRow
                                     key={alarm.id}
+                                    onClick={() => onAlarmClick(alarm)}
                                   >
                                         <TableCell>
                                             <div className="font-medium">{alarm.alarm_name}</div>
