@@ -24,21 +24,21 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Separator } from '@/components/ui/separator'
 
-interface AlarmDetailsProps {
-    selectedAlarm: any; // Remplacez 'any' par le type approprié pour selectedAlarm
+interface AlertDetailsProps {
+    selectedAlert: any; // Remplacez 'any' par le type approprié pour selectedAlert
   }
 
-  export default function AlarmDetails({ selectedAlarm }: AlarmDetailsProps) {
-    if (!selectedAlarm) {
+  export default function AlertDetails({ selectedAlert }: AlertDetailsProps) {
+    if (!selectedAlert) {
         return (
           <Card className="overflow-hidden">
             <CardHeader className="flex flex-row items-start bg-muted/50">
               <div className="grid gap-0.5">
                 <CardTitle className="group flex items-center gap-2 text-lg">
-                  No alarm selected
+                  No alert selected
                 </CardTitle>
                 <CardDescription>
-                  Please select an alarm from the list to view its details.
+                  Please select an alert from the list to view its details.
                 </CardDescription>
               </div>
             </CardHeader>
@@ -50,30 +50,30 @@ interface AlarmDetailsProps {
               <CardHeader className="flex flex-row items-start bg-muted/50">
                 <div className="grid gap-0.5">
                   <CardTitle className="group flex items-center gap-2 text-lg">
-                  {selectedAlarm ? selectedAlarm.alarm_name : 'No alarm selected'}
+                  {selectedAlert ? selectedAlert.alert_name : 'No alert selected'}
                     <Button
                       size="icon"
                       variant="outline"
                       className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
                     >
                       <Copy className="h-3 w-3" />
-                      <span className="sr-only">Copy Alarm ID</span>
+                      <span className="sr-only">Copy Alert ID</span>
                     </Button>
                   </CardTitle>
-                  <CardDescription>{selectedAlarm.alarm_description}</CardDescription>
+                  <CardDescription>{selectedAlert.alert_description}</CardDescription>
                 </div>
                 <div className="ml-auto flex items-center gap-1">
                   <Button size="sm" variant="outline" className="h-8 gap-1">
                     <LineChart className="h-3.5 w-3.5" />
                     <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
-                      Track Alarm
+                      Track Alert
                     </span>
                   </Button>
                 </div>
               </CardHeader>
               <CardContent className="p-6 text-sm">
                 <div className="grid gap-3">
-                  <div className="font-semibold">Alarm Details</div>
+                  <div className="font-semibold">Alert Details</div>
                   <ul className="grid gap-3">
                     <li className="flex items-center justify-between">
                       <span className="text-muted-foreground">
@@ -124,9 +124,9 @@ interface AlarmDetailsProps {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex flex-row items-center bAlarm-t bg-muted/50 px-6 py-3">
+              <CardFooter className="flex flex-row items-center bAlert-t bg-muted/50 px-6 py-3">
                 <div className="text-xs text-muted-foreground">
-                  Updated <time dateTime="2023-11-23">{selectedAlarm ? selectedAlarm.updated_at : 'No update'}</time>
+                  Updated <time dateTime="2023-11-23">{selectedAlert ? selectedAlert.updated_at : 'No update'}</time>
                 </div>
               </CardFooter>
             </Card>

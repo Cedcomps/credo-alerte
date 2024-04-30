@@ -16,9 +16,9 @@ interface DashboardQuotaCardProps {
     let description = "";
   
     switch (menuName) {
-      case "alarm":
-        title = "Your Alarms";
-        description = "Stay on Top of Critical Events with Our Intuitive Alarm Management System for Effective Communication.";
+      case "alert":
+        title = "Your Alerts";
+        description = "Stay on Top of Critical Events with Our Intuitive Alert Management System for Effective Communication.";
         break;
       case "product":
         title = "Your Products";

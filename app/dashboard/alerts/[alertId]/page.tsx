@@ -10,43 +10,43 @@ import ErrorMessage from '@/components/ErrorMessage';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
-export default function AlarmDetails() {
+export default function AlertDetails() {
   const params = useParams();
-  const alarmId = params.alarmId;
+  const alertId = params.alertId;
   const supabase = createClient();
-  const [alarm, setAlarm] = useState<any>(null);
+  const [alert, setAlert] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchAlarm = async () => {
+    const fetchAlert = async () => {
       setLoading(true);
       setError(null);
 
-      if (alarmId) {
+      if (alertId) {
         const { data, error } = await supabase
-          .from('alarms')
+          .from('alerts')
           .select('*')
-          .eq('id', alarmId)
+          .eq('id', alertId)
           .single();
 
         if (error) {
-          console.error('Error fetching alarm:', error);
-          setError('Failed to fetch alarm details. Please try again.');
+          console.error('Error fetching alert:', error);
+          setError('Failed to fetch alert details. Please try again.');
         } else {
-          setAlarm(data);
+          setAlert(data);
         }
       }
 
       setLoading(false);
     };
 
-    fetchAlarm();
-  }, [alarmId]);
+    fetchAlert();
+  }, [alertId]);
 
   const handleBack = () => {
-    router.push('/dashboard/alarms');
+    router.push('/dashboard/alerts');
   };
 
   if (loading) {
@@ -63,27 +63,27 @@ export default function AlarmDetails() {
             {/* <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-3"> */}
     <Card>
       <CardHeader>
-        <CardTitle>{alarm.alarm_name}</CardTitle>
-        <CardDescription>Alarm Details</CardDescription>
+        <CardTitle>{alert.alert_name}</CardTitle>
+        <CardDescription>Alert Details</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div>
-            <span className="font-semibold">Description:</span> {alarm.alarm_description}
+            <span className="font-semibold">Description:</span> {alert.alert_description}
           </div>
           <div>
-            <span className="font-semibold">Status:</span> <Badge>{alarm.status ? 'Active' : 'Inactive'}</Badge>
+            <span className="font-semibold">Status:</span> <Badge>{alert.status ? 'Active' : 'Inactive'}</Badge>
           </div>
           <div>
-            <span className="font-semibold">Created At:</span> {format(parseISO(alarm.created_at), 'MMMM d, yyyy')}
+            <span className="font-semibold">Created At:</span> {format(parseISO(alert.created_at), 'MMMM d, yyyy')}
           </div>
           <div>
-            <span className="font-semibold">Updated At:</span> {format(parseISO(alarm.updated_at), 'MMMM d, yyyy')}
+            <span className="font-semibold">Updated At:</span> {format(parseISO(alert.updated_at), 'MMMM d, yyyy')}
           </div>
         </div>
       </CardContent>
       <CardFooter>
-        <Button onClick={handleBack}>Back to Alarms</Button>
+        <Button onClick={handleBack}>Back to Alerts</Button>
       </CardFooter>
     </Card>
     </div>

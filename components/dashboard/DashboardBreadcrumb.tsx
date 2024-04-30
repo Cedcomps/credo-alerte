@@ -16,27 +16,27 @@ import { createClient } from '@/utils/supabase/client';
 export default function DashboardBreadcrumb() {
   const pathname = usePathname();
   const pathSegments = pathname.split('/').filter((segment) => segment !== '');
-  const [alarmName, setAlarmName] = useState('');
+  const [alertName, setAlertName] = useState('');
 
   useEffect(() => {
-    const fetchAlarmName = async () => {
-      if (pathSegments.length === 2 && pathSegments[0] === 'alarms') {
+    const fetchAlertName = async () => {
+      if (pathSegments.length === 2 && pathSegments[0] === 'alerts') {
         const supabase = createClient();
         const { data, error } = await supabase
-          .from('alarms')
-          .select('alarm_name')
+          .from('alerts')
+          .select('alert_name')
           .eq('id', pathSegments[1])
           .single();
 
         if (error) {
-          console.error('Error fetching alarm name:', error);
+          console.error('Error fetching alert name:', error);
         } else {
-          setAlarmName(data.alarm_name);
+          setAlertName(data.alert_name);
         }
       }
     };
 
-    fetchAlarmName();
+    fetchAlertName();
   }, [pathSegments]);
 
   return (
@@ -47,8 +47,8 @@ export default function DashboardBreadcrumb() {
           const isLast = index === pathSegments.length - 1;
           let displayName = segment.charAt(0).toUpperCase() + segment.slice(1);
 
-          if (isLast && alarmName) {
-            displayName = alarmName;
+          if (isLast && alertName) {
+            displayName = alertName;
           }
 
           return (

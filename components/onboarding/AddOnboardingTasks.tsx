@@ -63,7 +63,6 @@ const AddOnboardingTasks = () => {
     return <div>Error: {error.message}</div>;
   }
 
-  return <div>Onboarding tasks created successfully!</div>;
 };
 
 export default AddOnboardingTasks;

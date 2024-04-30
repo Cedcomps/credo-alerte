@@ -24,68 +24,83 @@ import { Button } from "@/components/ui/button";
 import { EllipsisVertical } from "lucide-react";
 import { ListFilter } from "lucide-react";
 import { format, formatDistanceToNow, parseISO } from 'date-fns';
-
-import AlarmSwitch from "@/components/alarms/AlarmSwitch";
-
+import AlertSwitch from "@/components/alerts/AlertSwitch";
 import { createClient } from "@/utils/supabase/client";
+import { PostgrestError } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 
-interface AlarmListProps {
-    onAlarmClick: (alarm: any) => void;
+interface AlertListProps {
+    onAlertClick: (alert: any) => void;
   }
-
   
-  export default function AlarmList({ onAlarmClick }: AlarmListProps) {
+  export default function AlertList({ onAlertClick }: AlertListProps) {
     const supabase = createClient()
-    const [alarms, setAlarms] = useState<any[]>([]);
+    const [alerts, setAlerts] = useState<any[]>([]);
     const [filter, setFilter] = useState('all');
     const [sortBy, setSortBy] = useState('last_updated');
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const handleSortByChange = (value: string) => {
         setSortBy(value);
     };
       
     useEffect(() => {
-        const fetchAlarms = async () => {
+        const fetchAlerts = async () => {
+          const { data: { user } } = await supabase.auth.getUser();
+      
+          if (!user) {
+            setIsLoading(false);
+            setError('Vous devez être authentifié pour voir vos alertes.');
+            return;
+          }
+      
+          try {
             let query = supabase
-                .from('alarms')
-                .select('*');
-      
+              .from('alerts')
+              .select('*')
+              .eq('user_id', user.id);
+    
             if (sortBy === 'last_updated') {
-                query = query.order('updated_at', { ascending: false });
+              query = query.order('updated_at', { ascending: false });
             } else if (sortBy === 'last_created') {
-                query = query.order('created_at', { ascending: false });
+              query = query.order('created_at', { ascending: false });
             } else if (sortBy === 'name_asc') {
-                query = query.order('alarm_name', { ascending: true });
+              query = query.order('alert_name', { ascending: true });
             } else if (sortBy === 'name_desc') {
-                query = query.order('alarm_name', { ascending: false });
+              query = query.order('alert_name', { ascending: false });
             }
-      
+    
             const { data, error } = await query.order('created_at', { ascending: false });
-      
+    
             if (error) {
-                console.error('Error fetching alarms:', error);
+              setError('Error fetching alerts: ' + error.message);
             } else {
-                setAlarms(data);
+              setAlerts(data);
             }
+          } catch (error) {
+            setError('Error fetching alerts:');
+          } finally {
+            setIsLoading(false);
+          }
         };
+    
+        fetchAlerts();
+      }, [filter, sortBy]);
       
-        fetchAlarms();
-    }, [filter, sortBy]);
-      
-    const filteredAlarms = alarms.filter((alarm) => {
+    const filteredAlerts = alerts.filter((alert) => {
         if (filter === 'active') {
-            return alarm.status === true;
+            return alert.status === true;
         } else if (filter === 'inactive') {
-            return alarm.status === false;
+            return alert.status === false;
         }
         return true;
     });
 
-    const handleAlarmToggle = (alarmId: string, newStatus: boolean) => {
-        setAlarms((prevAlarms) =>
-          prevAlarms.map((alarm) =>
-            alarm.id === alarmId ? { ...alarm, status: newStatus } : alarm
+    const handleAlertToggle = (alertId: string, newStatus: boolean) => {
+        setAlerts((prevAlerts) =>
+          prevAlerts.map((alert) =>
+            alert.id === alertId ? { ...alert, status: newStatus } : alert
           )
         );
       };
@@ -106,33 +121,33 @@ interface AlarmListProps {
       };
       
     const router = useRouter();
-    const openAlarm = async (alarmId: string, alarmName: string) => {
-        router.push(`/dashboard/alarms/${alarmId}?name=${encodeURIComponent(alarmName)}`);
+    const openAlert = async (alertId: string, alertName: string) => {
+        router.push(`/dashboard/alerts/${alertId}?name=${encodeURIComponent(alertName)}`);
       };
-    const duplicateAlarm = async (alarmId: string) => {
-    const { data: alarm, error } = await supabase
-        .from('alarms')
+    const duplicateAlert = async (alertId: string) => {
+    const { data: alert, error } = await supabase
+        .from('alerts')
         .select('*')
-        .eq('id', alarmId)
+        .eq('id', alertId)
         .single();
     
     if (error) {
-        console.error('Error fetching alarm:', error);
+        console.error('Error fetching alert:', error);
         return;
     }
     
     // Générer un nouvel ID unique avec uuid
-    const newAlarmId = uuidv4();
+    const newAlertId = uuidv4();
     
     // Obtenir la date et l'heure actuelles au format ISO 8601
     const now = new Date().toISOString();
     
-    const { data: duplicatedAlarm, error: insertError } = await supabase
-        .from('alarms')
+    const { data: duplicatedAlert, error: insertError } = await supabase
+        .from('alerts')
         .insert({ 
-        ...alarm, 
-        id: newAlarmId, 
-        alarm_name: `${alarm.alarm_name} (copy)`,
+        ...alert, 
+        id: newAlertId, 
+        alert_name: `${alert.alert_name} (copy)`,
         created_at: now,
         updated_at: now
         })
@@ -140,23 +155,23 @@ interface AlarmListProps {
         .single();
     
     if (insertError) {
-        console.error('Error duplicating alarm:', insertError);
+        console.error('Error duplicating alert:', insertError);
     } else {
-        setAlarms([...alarms, duplicatedAlarm]);
+        setAlerts([...alerts, duplicatedAlert]);
     }
     };
        
-      const deleteAlarm = async (alarmId: string) => {
-        // Logique pour supprimer l'alarme avec l'ID spécifié
+      const deleteAlert = async (alertId: string) => {
+        // Logique pour supprimer l'alerte avec l'ID spécifié
         const { error } = await supabase
-          .from('alarms')
+          .from('alerts')
           .delete()
-          .eq('id', alarmId);
+          .eq('id', alertId);
       
         if (error) {
-          console.error('Error deleting alarm:', error);
+          console.error('Error deleting alert:', error);
         } else {
-          setAlarms(alarms.filter((alarm) => alarm.id !== alarmId));
+          setAlerts(alerts.filter((alert) => alert.id !== alertId));
         }
       };
     
@@ -217,16 +232,16 @@ interface AlarmListProps {
             <TabsContent value="all">
                 <Card x-chunk="dashboard-05-chunk-3">
                     <CardHeader className="px-7">
-                        <CardTitle>Alarms</CardTitle>
+                        <CardTitle>Alerts</CardTitle>
                         <CardDescription>
-                            All your alarms from your account.
+                            All your alerts from your account.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Alarm Name</TableHead>
+                                    <TableHead>Alert Name</TableHead>
                                     <TableHead className="hidden sm:table-cell">
                                         Description
                                     </TableHead>
@@ -243,30 +258,30 @@ interface AlarmListProps {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {filteredAlarms.map((alarm) => (
+                                {filteredAlerts.map((alert) => (
                                     <TableRow
-                                    key={alarm.id}
-                                    onClick={() => onAlarmClick(alarm)}
+                                    key={alert.id}
+                                    onClick={() => onAlertClick(alert)}
                                   >                
                                         <TableCell>
-                                            <div className="font-medium">{alarm.alarm_name}</div>
+                                            <div className="font-medium">{alert.alert_name}</div>
                                             <div className="hidden text-sm text-muted-foreground md:inline">
-                                                Last updated {formatDistanceToNow(parseISO(alarm.updated_at), { addSuffix: true })}
+                                                Last updated {formatDistanceToNow(parseISO(alert.updated_at), { addSuffix: true })}
                                             </div>
                                         </TableCell>
                                         <TableCell className="hidden sm:table-cell">
-                                            {alarm.alarm_description}
+                                            {alert.alert_description}
                                         </TableCell>
                                         <TableCell className="hidden sm:table-cell">
                                             <Badge className="text-xs">
-                                                {alarm.status}
+                                                {alert.status}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="hidden md:table-cell">
-                                            {format(new Date(alarm.created_at), 'd MMMM, yyyy')}
+                                            {format(new Date(alert.created_at), 'd MMMM, yyyy')}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <AlarmSwitch alarmId={alarm.id} onToggle={handleAlarmToggle} />
+                                            <AlertSwitch alertId={alert.id} onToggle={handleAlertToggle} />
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <DropdownMenu>
@@ -278,10 +293,10 @@ interface AlarmListProps {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem onClick={() => openAlarm(alarm.id, alarm.alarm_name)}>Open</DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => duplicateAlarm(alarm.id)}>Duplicate</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => openAlert(alert.id, alert.alert_name)}>Open</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => duplicateAlert(alert.id)}>Duplicate</DropdownMenuItem>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => deleteAlarm(alarm.id)}>Delete</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => deleteAlert(alert.id)}>Delete</DropdownMenuItem>
                                             </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -295,16 +310,16 @@ interface AlarmListProps {
             <TabsContent value="active">
                 <Card x-chunk="dashboard-05-chunk-3">
                     <CardHeader className="px-7">
-                        <CardTitle>Active Alarms</CardTitle>
+                        <CardTitle>Active Alerts</CardTitle>
                         <CardDescription>
-                            Recent active alarms from your account.
+                            Recent active alerts from your account.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Alarm Name</TableHead>
+                                    <TableHead>Alert Name</TableHead>
                                     <TableHead className="hidden sm:table-cell">
                                         Description
                                     </TableHead>
@@ -321,30 +336,30 @@ interface AlarmListProps {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {filteredAlarms.map((alarm) => (
+                                {filteredAlerts.map((alert) => (
                                     <TableRow
-                                    key={alarm.id}
-                                    onClick={() => onAlarmClick(alarm)}
+                                    key={alert.id}
+                                    onClick={() => onAlertClick(alert)}
                                   >
                                         <TableCell>
-                                            <div className="font-medium">{alarm.alarm_name}</div>
+                                            <div className="font-medium">{alert.alert_name}</div>
                                             <div className="hidden text-sm text-muted-foreground md:inline">
-                                                Last updated {formatDistanceToNow(parseISO(alarm.updated_at), { addSuffix: true })}
+                                                Last updated {formatDistanceToNow(parseISO(alert.updated_at), { addSuffix: true })}
                                             </div>
                                         </TableCell>
                                         <TableCell className="hidden sm:table-cell">
-                                            {alarm.alarm_description}
+                                            {alert.alert_description}
                                         </TableCell>
                                         <TableCell className="hidden sm:table-cell">
                                             <Badge className="text-xs">
-                                                {alarm.status}
+                                                {alert.status}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="hidden md:table-cell">
-                                            {format(new Date(alarm.created_at), 'd MMMM, yyyy')}
+                                            {format(new Date(alert.created_at), 'd MMMM, yyyy')}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                        <AlarmSwitch alarmId={alarm.id} onToggle={handleAlarmToggle} />
+                                        <AlertSwitch alertId={alert.id} onToggle={handleAlertToggle} />
 
                                         </TableCell>
                                         <TableCell className="text-right">
@@ -357,10 +372,10 @@ interface AlarmListProps {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem onClick={() => openAlarm(alarm.id, alarm.alarm_name)}>Open</DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => duplicateAlarm(alarm.id)}>Duplicate</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => openAlert(alert.id, alert.alert_name)}>Open</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => duplicateAlert(alert.id)}>Duplicate</DropdownMenuItem>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => deleteAlarm(alarm.id)}>Delete</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => deleteAlert(alert.id)}>Delete</DropdownMenuItem>
                                             </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -374,16 +389,16 @@ interface AlarmListProps {
             <TabsContent value="inactive">
                 <Card x-chunk="dashboard-05-chunk-3">
                     <CardHeader className="px-7">
-                        <CardTitle>Inactive Alarms</CardTitle>
+                        <CardTitle>Inactive Alerts</CardTitle>
                         <CardDescription>
-                            Inactive alarms in your account.
+                            Inactive alerts in your account.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Alarm Name</TableHead>
+                                    <TableHead>Alert Name</TableHead>
                                     <TableHead className="hidden sm:table-cell">
                                         Description
                                     </TableHead>
@@ -400,30 +415,30 @@ interface AlarmListProps {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {filteredAlarms.map((alarm) => (
+                                {filteredAlerts.map((alert) => (
                                     <TableRow
-                                    key={alarm.id}
-                                    onClick={() => onAlarmClick(alarm)}
+                                    key={alert.id}
+                                    onClick={() => onAlertClick(alert)}
                                   >
                                         <TableCell>
-                                            <div className="font-medium">{alarm.alarm_name}</div>
+                                            <div className="font-medium">{alert.alert_name}</div>
                                             <div className="hidden text-sm text-muted-foreground md:inline">
-                                                Last updated {formatDistanceToNow(parseISO(alarm.updated_at), { addSuffix: true })}
+                                                Last updated {formatDistanceToNow(parseISO(alert.updated_at), { addSuffix: true })}
                                             </div>
                                         </TableCell>
                                         <TableCell className="hidden sm:table-cell">
-                                            {alarm.alarm_description}
+                                            {alert.alert_description}
                                         </TableCell>
                                         <TableCell className="hidden sm:table-cell">
                                             <Badge className="text-xs">
-                                                {alarm.status}
+                                                {alert.status}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="hidden md:table-cell">
-                                            {format(new Date(alarm.created_at), 'd MMMM, yyyy')}
+                                            {format(new Date(alert.created_at), 'd MMMM, yyyy')}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                        <AlarmSwitch alarmId={alarm.id} onToggle={handleAlarmToggle} />
+                                        <AlertSwitch alertId={alert.id} onToggle={handleAlertToggle} />
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <DropdownMenu>
@@ -435,10 +450,10 @@ interface AlarmListProps {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem onClick={() => openAlarm(alarm.id, alarm.alarm_name)}>Open</DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => duplicateAlarm(alarm.id)}>Duplicate</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => openAlert(alert.id, alert.alert_name)}>Open</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => duplicateAlert(alert.id)}>Duplicate</DropdownMenuItem>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => deleteAlarm(alarm.id)}>Delete</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => deleteAlert(alert.id)}>Delete</DropdownMenuItem>
                                             </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>

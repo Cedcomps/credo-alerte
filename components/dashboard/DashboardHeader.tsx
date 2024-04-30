@@ -67,7 +67,7 @@ const handleLogout = async () => {
               className="flex items-center gap-4 px-2.5 text-foreground"
             >
               <Bell className="h-5 w-5" />
-              Alarms
+              Alerts
             </Link>
             <Link
               href="#"

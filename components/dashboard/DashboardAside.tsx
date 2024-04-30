@@ -40,18 +40,18 @@ export default function DashboardAside() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="/dashboard/alarms"
+                href="/dashboard/alerts"
                 className={`ml-2 group flex items-center justify-start rounded-md transition-colors ${
-                  pathname.startsWith('/dashboard/alarms')
+                  pathname.startsWith('/dashboard/alerts')
                     ? 'bg-accent text-accent-foreground'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <Bell className="h-5 w-5 mr-2" />
-                <span className="hidden group-hover:inline">Alarms</span>
+                <span className="hidden group-hover:inline">Alerts</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Alarms</TooltipContent>
+            <TooltipContent side="right">Alerts</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -84,10 +84,10 @@ export default function DashboardAside() {
                 className="ml-2 flex items-center justify-start rounded-md text-muted-foreground transition-colors hover:text-foreground"
               >
                 <LineChart className="h-5 w-5 mr-2" />
-                <span className="hidden group-hover:inline">Analytics</span>
+                <span className="hidden group-hover:inline">Monitoring</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Analytics</TooltipContent>
+            <TooltipContent side="right">Monitoring</TooltipContent>
           </Tooltip>
         </nav>
         {/* Gem add icon */}

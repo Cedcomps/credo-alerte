@@ -1,24 +1,26 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
+import { useRouter } from 'next/navigation';
 
 interface DashboardNewElementProps {
   menuName: string;
 }
 
 export default function DashboardNewElement({ menuName }: DashboardNewElementProps) {
+  const router = useRouter();
   let title = "";
   let description = "";
 
   switch (menuName) {
-    case "alarm":
-      title = "Your Alarms";
-      description = "Stay on Top of Critical Events with Our Intuitive Alarm Management System for Effective Communication.";
+    case "alert":
+      title = "Your Alerts";
+      description = "Stay on Top of Critical Events with Our Intuitive Alert Management System for Effective Communication.";
       break;
     case "product":
       title = "Your Products";
@@ -33,8 +35,14 @@ export default function DashboardNewElement({ menuName }: DashboardNewElementPro
       description = "Welcome to Your Comprehensive Dashboard for Data-Driven Decision Making.";
   }
 
+  const handleCreateNewClick = () => {
+    if (menuName === 'alert') {
+      router.push('/dashboard/alerts/create');
+    }
+  };
+
   return (
-    <Card >
+    <Card>
       <CardHeader className="pb-3">
         <CardTitle>{title}</CardTitle>
         <CardDescription className="max-w-lg text-balance leading-relaxed">
@@ -42,8 +50,8 @@ export default function DashboardNewElement({ menuName }: DashboardNewElementPro
         </CardDescription>
       </CardHeader>
       <CardFooter>
-        <Button>Create New {title.split(" ")[1]}</Button>
+        <Button onClick={handleCreateNewClick}>Create New {title.split(" ")[1]}</Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

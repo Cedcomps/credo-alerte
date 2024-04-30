@@ -7,32 +7,32 @@ import { createClient } from "@/utils/supabase/client";
 // Initialisez le client Supabase avec votre URL de projet et votre clé API publique
 const supabase = createClient();
 
-interface AlarmSwitchProps {
-  alarmId: string;
-  onToggle: (alarmId: string, newStatus: boolean) => void;
+interface AlertSwitchProps {
+  alertId: string;
+  onToggle: (alertId: string, newStatus: boolean) => void;
 }
 
-export default function AlarmSwitch({ alarmId, onToggle }: AlarmSwitchProps) {
+export default function AlertSwitch({ alertId, onToggle }: AlertSwitchProps) {
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
     // Récupérez l'état initial du switch depuis Supabase
-    const fetchAlarmStatus = async () => {
+    const fetchAlertStatus = async () => {
       const { data, error } = await supabase
-        .from('alarms')
+        .from('alerts')
         .select('status')
-        .eq('id', alarmId)
+        .eq('id', alertId)
         .single();
 
       if (error) {
-        console.error('Error fetching alarm status:', error);
+        console.error('Error fetching alert status:', error);
       } else {
         setIsActive(data.status);
       }
     };
 
-    fetchAlarmStatus();
-  }, [alarmId]);
+    fetchAlertStatus();
+  }, [alertId]);
 
   
   const handleSwitchChange = async () => {
@@ -41,23 +41,23 @@ export default function AlarmSwitch({ alarmId, onToggle }: AlarmSwitchProps) {
 
     // Mettez à jour l'état du switch dans Supabase
     const { error } = await supabase
-      .from('alarms')
+      .from('alerts')
       .update({ status: newStatus })
-      .eq('id', alarmId);
+      .eq('id', alertId);
 
     if (error) {
-      console.error('Error updating alarm status:', error);
+      console.error('Error updating alert status:', error);
     }
     if (!error) {
-      onToggle(alarmId, newStatus);
+      onToggle(alertId, newStatus);
     }
   };
 
   return (
     <div className="flex items-center space-x-2">
-      <Switch id={`alarm-${alarmId}`} onCheckedChange={handleSwitchChange} checked={isActive} />
+      <Switch id={`alert-${alertId}`} onCheckedChange={handleSwitchChange} checked={isActive} />
       <Label
-        htmlFor={`alarm-${alarmId}`}
+        htmlFor={`alert-${alertId}`}
         className={isActive ? 'text-primary' : ''}
       >
         {isActive ? 'Active' : 'Inactive'}
