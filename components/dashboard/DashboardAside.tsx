@@ -68,7 +68,7 @@ export default function DashboardAside() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
+                href="/dashboard/directory"
                 className="ml-2 flex items-center justify-start rounded-md text-muted-foreground transition-colors hover:text-foreground"
               >
                 <BookUser className="h-5 w-5 mr-2" />
@@ -80,7 +80,7 @@ export default function DashboardAside() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
+                href="/dashboard/monitoring"
                 className="ml-2 flex items-center justify-start rounded-md text-muted-foreground transition-colors hover:text-foreground"
               >
                 <LineChart className="h-5 w-5 mr-2" />

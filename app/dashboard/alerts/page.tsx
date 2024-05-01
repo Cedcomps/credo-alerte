@@ -1,9 +1,9 @@
 'use client'
 import DashboardNewElement from "@/components/dashboard/DashboardNewElement";
 import AlertList from "@/components/alerts/AlertList";
-import AlertDetails from "@/components/AlertDetails";
-import DashboardQuotaCard from "@/components/dashboard/DashboardQuotaCard";
 import { SetStateAction, useState } from "react";
+import AlertDetails from "@/components/alerts/AlertDetails";
+import DashboardNumberCard from "@/components/dashboard/DashboardNumberCard";
 
 
 export default function DashboardAlerts() {
@@ -16,10 +16,10 @@ export default function DashboardAlerts() {
   return (
     <main className="flex flex-col gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       {/* DashboardNewElement */}
-      <div className="max-w-md ">
+      <div className="md:flex md:gap-6">
         <DashboardNewElement menuName="alert" />
+        <DashboardNumberCard menuName="alerts"/>
       </div>
-
       {/* AlertList et AlertDetails */}
       <div className="md:flex md:gap-4">
         <div className="md:w-2/3">

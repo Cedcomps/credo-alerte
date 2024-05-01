@@ -5,10 +5,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { format, parseISO } from 'date-fns';
 import { useParams } from 'next/navigation';
-import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { Spinner } from '@/components/Spinner';
 
 export default function AlertDetails() {
   const params = useParams();
@@ -50,7 +50,7 @@ export default function AlertDetails() {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <Spinner />;
   }
 
   if (error) {

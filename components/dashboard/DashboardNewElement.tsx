@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { PlusCircle, SquarePlus } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
 interface DashboardNewElementProps {
@@ -26,7 +27,7 @@ export default function DashboardNewElement({ menuName }: DashboardNewElementPro
       title = "Your Products";
       description = "Efficiently Manage Your Product Catalog and Streamline Inventory Control.";
       break;
-    case "contact":
+    case "directory":
       title = "Your Contact Base";
       description = "Efficiently Manage and Engage with Your Contact Base for Seamless Communication.";
       break;
@@ -49,8 +50,21 @@ export default function DashboardNewElement({ menuName }: DashboardNewElementPro
           {description}
         </CardDescription>
       </CardHeader>
-      <CardFooter>
-        <Button onClick={handleCreateNewClick}>Create New {title.split(" ")[1]}</Button>
+      <CardFooter className="flex justify-between">
+        {menuName === 'directory' ? (
+          <>
+            <Button  onClick={() => router.push('/dashboard/contacts/create')}>
+              <SquarePlus className="h-4 w-4" />
+              &nbsp; Add Contact</Button>
+            <Button variant="secondary" onClick={() => router.push('/dashboard/groups/create')}>
+              <SquarePlus className="h-4 w-4" />
+              &nbsp; Add Group</Button>
+          </>
+        ) : (
+          <Button onClick={handleCreateNewClick}>
+            <SquarePlus className="h-4 w-4" />
+          &nbsp; Add {title.split(" ")[1]}</Button>
+        )}
       </CardFooter>
     </Card>
   );

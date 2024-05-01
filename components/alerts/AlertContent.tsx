@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card';
 
 interface AlertContentProps {
   alert_message: string;
@@ -31,7 +32,14 @@ export const AlertContent: React.FC<AlertContentProps> = ({
 }) => {
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Alert Content</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>Alert Content</CardTitle>
+          <CardDescription>
+            Write an decisive message for people wno will receive the alert.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
       <div className="mb-4">
         <Label htmlFor="alert_message" className="mb-2">
           Alert message
@@ -40,7 +48,7 @@ export const AlertContent: React.FC<AlertContentProps> = ({
           id="alert_message"
           value={alert_message}
           onChange={(e) => setAlertMessage(e.target.value)}
-          placeholder="Fill in the alert message sent to citizens"
+          placeholder="Fill in the alert message sent to contacts."
         />
       </div>
       {/* <div className="mb-4">
@@ -102,6 +110,8 @@ export const AlertContent: React.FC<AlertContentProps> = ({
           </SelectContent>
         </Select>
       </div> */}
+      </CardContent>
+      </Card>
     </div>
   );
 };

@@ -8,6 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
+import { Toaster } from "@/components/ui/sonner"
+import { toast } from "sonner"
+
+
 
 interface AlertData {
   alert_name: string;
@@ -18,6 +22,7 @@ interface AlertData {
   // launchDate: Date;
   // alertDuration: string;
 }
+
 
 const createAlert = async (alertData: AlertData) => {
   const supabase = createClient();
@@ -42,6 +47,14 @@ export default function NewAlert() {
   // const [guidanceToReact, setGuidanceToReact] = useState('');
   // const [launchDate, setLaunchDate] = useState(new Date());
   // const [alertDuration, setAlertDuration] = useState('1 hour');
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+
+const handleShowSuccessAlert = () => {
+  setShowSuccessAlert(true);
+  setTimeout(() => {
+    setShowSuccessAlert(false);
+  }, 3000); // Masquer l'alerte après 3 secondes
+};
 
   const handleNextStep = () => {
     setCurrentStep(currentStep + 1);
@@ -69,6 +82,7 @@ export default function NewAlert() {
   
     if (newAlert) {
       const alertId = newAlert.id;
+      handleShowSuccessAlert();
       router.push(`/dashboard/alerts/${alertId}`);
       }
   };
@@ -126,6 +140,10 @@ export default function NewAlert() {
         ) : (
           <Button onClick={handleCreateAlert}>Create Alert</Button>
         )}
+        {showSuccessAlert && (
+              <Toaster />
+              
+    )}
       </div>
     </div>
   );
