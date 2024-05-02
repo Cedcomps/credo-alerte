@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 interface AlertContentProps {
   alert_message: string;
@@ -32,6 +33,8 @@ export const AlertContent: React.FC<AlertContentProps> = ({
 }) => {
   return (
     <div>
+            <ErrorBoundary>
+
       <Card>
         <CardHeader>
           <CardTitle>Alert Content</CardTitle>
@@ -112,6 +115,7 @@ export const AlertContent: React.FC<AlertContentProps> = ({
       </div> */}
       </CardContent>
       </Card>
+    </ErrorBoundary>
     </div>
   );
 };

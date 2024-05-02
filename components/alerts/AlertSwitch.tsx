@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { createClient } from "@/utils/supabase/client";
+import { ErrorBoundary } from '../ErrorBoundary';
 
 // Initialisez le client Supabase avec votre URL de projet et votre clé API publique
 const supabase = createClient();
@@ -54,6 +55,7 @@ export default function AlertSwitch({ alertId, onToggle }: AlertSwitchProps) {
   };
 
   return (
+    <ErrorBoundary>
     <div className="flex items-center space-x-2">
       <Switch id={`alert-${alertId}`} onCheckedChange={handleSwitchChange} checked={isActive} />
       <Label
@@ -63,5 +65,6 @@ export default function AlertSwitch({ alertId, onToggle }: AlertSwitchProps) {
         {isActive ? 'Active' : 'Inactive'}
       </Label>
     </div>
+    </ErrorBoundary>
   );
 }

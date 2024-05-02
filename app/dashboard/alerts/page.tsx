@@ -3,8 +3,9 @@ import DashboardNewElement from "@/components/dashboard/DashboardNewElement";
 import AlertList from "@/components/alerts/AlertList";
 import { SetStateAction, useState } from "react";
 import AlertDetails from "@/components/alerts/AlertDetails";
-import DashboardNumberCard from "@/components/dashboard/DashboardNumberCard";
-
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import UserInfo from "@/components/UserInfo";
+import AlertCount from "@/components/alerts/AlertCount";
 
 export default function DashboardAlerts() {
   const [selectedAlert, setSelectedAlert] = useState(null);
@@ -14,11 +15,12 @@ export default function DashboardAlerts() {
   };
 
   return (
+    <ErrorBoundary>
     <main className="flex flex-col gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       {/* DashboardNewElement */}
       <div className="md:flex md:gap-6">
         <DashboardNewElement menuName="alert" />
-        <DashboardNumberCard menuName="alerts"/>
+        <AlertCount description={"Alerts created"}/>
       </div>
       {/* AlertList et AlertDetails */}
       <div className="md:flex md:gap-4">
@@ -30,5 +32,6 @@ export default function DashboardAlerts() {
           </div>
       </div>
     </main>
+    </ErrorBoundary>
   );
 }

@@ -53,7 +53,7 @@ export default function DashboardAside() {
             </TooltipTrigger>
             <TooltipContent side="right">Alerts</TooltipContent>
           </Tooltip>
-          <Tooltip>
+          {/* <Tooltip>
             <TooltipTrigger asChild>
               <Link
                 href="#"
@@ -64,7 +64,7 @@ export default function DashboardAside() {
               </Link>
             </TooltipTrigger>
             <TooltipContent side="right">Products</TooltipContent>
-          </Tooltip>
+          </Tooltip> */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Link

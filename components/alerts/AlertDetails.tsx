@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { ErrorBoundary } from "../ErrorBoundary";
 
 interface AlertDetailsProps {
     selectedAlert: any; // Remplacez 'any' par le type approprié pour selectedAlert
@@ -38,6 +39,7 @@ interface AlertDetailsProps {
         );
       }  
     return (
+      <ErrorBoundary>
             <Card className="overflow-hidden">
               <CardHeader className="flex flex-row items-start bg-muted/50">
                 <div className="grid gap-0.5">
@@ -122,5 +124,6 @@ interface AlertDetailsProps {
                 </div>
               </CardFooter>
             </Card>
+            </ErrorBoundary>
         );
   }

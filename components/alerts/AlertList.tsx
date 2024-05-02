@@ -28,6 +28,7 @@ import AlertSwitch from "@/components/alerts/AlertSwitch";
 import { createClient } from "@/utils/supabase/client";
 import { PostgrestError } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 interface AlertListProps {
     onAlertClick: (alert: any) => void;
@@ -177,6 +178,7 @@ interface AlertListProps {
     
 
     return (
+        <ErrorBoundary>
         <Tabs defaultValue="all" onValueChange={(value) => setFilter(value)}>
             <div className="flex items-center">
                 <TabsList>
@@ -296,7 +298,7 @@ interface AlertListProps {
                                                 <DropdownMenuItem onClick={() => openAlert(alert.id, alert.alert_name)}>Open</DropdownMenuItem>
                                                 <DropdownMenuItem onClick={() => duplicateAlert(alert.id)}>Duplicate</DropdownMenuItem>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => deleteAlert(alert.id)}>Delete</DropdownMenuItem>
+                                                <DropdownMenuItem className='text-destructive' onClick={() => deleteAlert(alert.id)}>Delete</DropdownMenuItem>
                                             </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -465,5 +467,6 @@ interface AlertListProps {
                 </Card>
             </TabsContent>
         </Tabs>
+        </ErrorBoundary>
     )
 }

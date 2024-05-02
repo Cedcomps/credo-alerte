@@ -53,7 +53,7 @@ export default function DashboardNewElement({ menuName }: DashboardNewElementPro
       <CardFooter className="flex justify-between">
         {menuName === 'directory' ? (
           <>
-            <Button  onClick={() => router.push('/dashboard/contacts/create')}>
+            <Button onClick={() => router.push('/dashboard/contacts/create')}>
               <SquarePlus className="h-4 w-4" />
               &nbsp; Add Contact</Button>
             <Button variant="secondary" onClick={() => router.push('/dashboard/groups/create')}>

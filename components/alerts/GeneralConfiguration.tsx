@@ -2,6 +2,7 @@ import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { ErrorBoundary } from '../ErrorBoundary';
 
 interface GeneralConfigurationProps {
   alert_name: string;
@@ -18,6 +19,7 @@ export const GeneralConfiguration: React.FC<GeneralConfigurationProps> = ({
 }) => {
   return (
     <div>
+      <ErrorBoundary>
       <Card>
         <CardHeader>
           <CardTitle>Give a name to your Alert</CardTitle>
@@ -48,6 +50,7 @@ export const GeneralConfiguration: React.FC<GeneralConfigurationProps> = ({
           </div>
         </CardContent>
       </Card>
+      </ErrorBoundary>
     </div>
   );
 };

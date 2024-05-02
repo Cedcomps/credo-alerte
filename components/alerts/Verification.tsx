@@ -2,6 +2,7 @@ import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '../ui/separator';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 interface VerificationProps {
   alert_name: string;
@@ -23,6 +24,7 @@ export const Verification: React.FC<VerificationProps> = ({
   // alertDuration,
 }) => {
   return (
+    <ErrorBoundary>
     <Card>
       <CardHeader>
         <CardTitle>Verification</CardTitle>
@@ -70,5 +72,6 @@ export const Verification: React.FC<VerificationProps> = ({
         </div>
       </CardContent>
     </Card>
+    </ErrorBoundary>
   );
 };

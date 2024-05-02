@@ -69,19 +69,19 @@ const handleLogout = async () => {
               <Bell className="h-5 w-5" />
               Alerts
             </Link>
-            <Link
+            {/* <Link
               href="#"
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
             >
               <Package className="h-5 w-5" />
               Products
-            </Link>
+            </Link> */}
             <Link
               href="#"
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
             >
               <BookUser className="h-5 w-5" />
-              Contacts
+              Directory
             </Link>
             <Link
               href="#"

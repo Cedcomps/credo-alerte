@@ -1,19 +1,18 @@
 'use client'
 import { v4 as uuidv4 } from 'uuid';
 import React, { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Mail, EllipsisVertical, Phone, User, Users } from "lucide-react";
+import { EllipsisVertical, User, Users } from "lucide-react";
 import { ListFilter } from "lucide-react";
-import { format, formatDistanceToNow, parseISO } from 'date-fns';
 import { createClient } from "@/utils/supabase/client";
-import { PostgrestError } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { Checkbox } from '../ui/checkbox';
+import { ErrorBoundary } from '../ErrorBoundary';
+import { Spinner } from '@/components/Spinner'
 
 interface ContactListProps {
   onContactClick: (contact: any) => void;
@@ -31,64 +30,75 @@ export default function ContactList({ onContactClick }: ContactListProps) {
     setSortBy(value);
   };
 
-    useEffect(() => {
-        const fetchData = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true)
+      const { data: { user } } = await supabase.auth.getUser();
 
-        if (!user) {
-            setIsLoading(false);
-            setError('Vous devez être authentifié pour voir vos contacts.');
-            return;
+      if (!user) {
+        setIsLoading(false);
+        setError('Vous devez être authentifié pour voir vos contacts.');
+        return;
+      }
+
+      try {
+        let contactsQuery = supabase
+          .from('contacts')
+          .select('*')
+          .eq('user_id', user.id);
+        
+        let groupsQuery = supabase
+          .from('groups')
+          .select(`
+            *,
+            contact_count:contact_group(count)
+          `)
+          .eq('user_id', user.id)
+          .order('updated_at', { ascending: false });
+
+        if (sortBy === 'last_updated') {
+          contactsQuery = contactsQuery.order('updated_at', { ascending: false });
+          groupsQuery = groupsQuery.order('updated_at', { ascending: false });
+        } else if (sortBy === 'last_created') {
+          contactsQuery = contactsQuery.order('created_at', { ascending: false });
+          groupsQuery = groupsQuery.order('created_at', { ascending: false });
+        } else if (sortBy === 'name_asc') {
+          contactsQuery = contactsQuery.order('contact_last_name', { ascending: true });
+          groupsQuery = groupsQuery.order('group_name', { ascending: true });
+        } else if (sortBy === 'name_desc') {
+          contactsQuery = contactsQuery.order('contact_last_name', { ascending: false });
+          groupsQuery = groupsQuery.order('group_name', { ascending: false });
         }
 
-        try {
-            let contactsQuery = supabase
-            .from('contacts')
-            .select('*')
-            .eq('user_id', user.id);
+        const { data: contactsData, error: contactsError } = await contactsQuery;
+        const { data: groupsData, error: groupsError } = await groupsQuery;
 
-            let groupsQuery = supabase
-            .from('groups')
-            .select('*')
-            .eq('user_id', user.id);
-
-            if (sortBy === 'last_updated') {
-            contactsQuery = contactsQuery.order('updated_at', { ascending: false });
-            groupsQuery = groupsQuery.order('updated_at', { ascending: false });
-            } else if (sortBy === 'last_created') {
-            contactsQuery = contactsQuery.order('created_at', { ascending: false });
-            groupsQuery = groupsQuery.order('created_at', { ascending: false });
-            } else if (sortBy === 'name_asc') {
-            contactsQuery = contactsQuery.order('contact_last_name', { ascending: true });
-            groupsQuery = groupsQuery.order('group_name', { ascending: true });
-            } else if (sortBy === 'name_desc') {
-            contactsQuery = contactsQuery.order('contact_last_name', { ascending: false });
-            groupsQuery = groupsQuery.order('group_name', { ascending: false });
-            }
-
-            const { data: contactsData, error: contactsError } = await contactsQuery;
-            const { data: groupsData, error: groupsError } = await groupsQuery;
-
-            if (contactsError) {
-            setError('Error fetching contacts: ' + contactsError.message);
-            } else {
-            setContacts(contactsData);
-            }
-
-            if (groupsError) {
-            setError('Error fetching groups: ' + groupsError.message);
-            } else {
-            setGroups(groupsData);
-            }
-        } catch (error) {
-            setError('Error fetching data:');
-        } finally {
-            setIsLoading(false);
+        if (contactsError) {
+          setError('Error fetching contacts: ' + contactsError.message);
+        } else {
+          setContacts(contactsData);
         }
-        };
 
-        fetchData();
-    }, [sortBy]);
+        if (groupsError) {
+          setError('Error fetching groups: ' + groupsError.message);
+        } else {
+          setGroups(groupsData);
+        }
+        
+      } catch (error) {
+        setError('Error fetching data:');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [sortBy]);
+
+  // if (isLoading) {
+  //   return <Spinner size="large">Loading contacts...</Spinner>
+  // }
+
 
   const getSortByLabel = (sortBy: string) => {
     switch (sortBy) {
@@ -106,8 +116,8 @@ export default function ContactList({ onContactClick }: ContactListProps) {
   };
 
   const router = useRouter();
-  const editContact = async (contactId: string, contactName: string) => {
-    router.push(`/dashboard/contacts/${contactId}?name=${encodeURIComponent(contactName)}`);
+  const openContact = async (contactId: string, contactName: string) => {
+    router.push(`/dashboard/directory/contacts/${contactId}?name=${encodeURIComponent(contactName)}`);
   };
 
   const duplicateContact = async (contactId: string) => {
@@ -162,70 +172,71 @@ export default function ContactList({ onContactClick }: ContactListProps) {
   };
 
   return (
-    <Tabs defaultValue="contacts">
-      <div className="flex items-center">
-        <TabsList>
-          <TabsTrigger value="contacts">Contacts</TabsTrigger>
-          <TabsTrigger value="groups">Groups</TabsTrigger>
-        </TabsList>
-        <div className="ml-auto flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 gap-1 text-sm"
-              >
-                <ListFilter className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only">
-                  Sort by {getSortByLabel(sortBy)}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Sort by</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem
-                checked={sortBy === 'last_updated'}
-                onSelect={() => handleSortByChange('last_updated')}
-              >
-                Last updated
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={sortBy === 'last_created'}
-                onSelect={() => handleSortByChange('last_created')}
-              >
-                Last created
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={sortBy === 'name_asc'}
-                onSelect={() => handleSortByChange('name_asc')}
-              >
-                Name (A-Z)
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={sortBy === 'name_desc'}
-                onSelect={() => handleSortByChange('name_desc')}
-              >
-                Name (Z-A)
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+    <ErrorBoundary>
+      <Tabs defaultValue="contacts">
+        <div className="flex items-center">
+          <TabsList>
+            <TabsTrigger value="contacts">Contacts</TabsTrigger>
+            <TabsTrigger value="groups">Groups</TabsTrigger>
+          </TabsList>
+          <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 gap-1 text-sm"
+                >
+                  <ListFilter className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only">
+                    Sort by {getSortByLabel(sortBy)}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuCheckboxItem
+                  checked={sortBy === 'last_updated'}
+                  onSelect={() => handleSortByChange('last_updated')}
+                >
+                  Last updated
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={sortBy === 'last_created'}
+                  onSelect={() => handleSortByChange('last_created')}
+                >
+                  Last created
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={sortBy === 'name_asc'}
+                  onSelect={() => handleSortByChange('name_asc')}
+                >
+                  Name (A-Z)
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={sortBy === 'name_desc'}
+                  onSelect={() => handleSortByChange('name_desc')}
+                >
+                  Name (Z-A)
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-      </div>
-      <TabsContent value="contacts">
-        <Card>
-          <CardHeader className="px-7">
-            <CardTitle><User />Contacts</CardTitle>
-            <CardDescription>
-              List of your contacts from your account.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px]">
+        <TabsContent value="contacts">
+          <Card>
+            <CardHeader className="px-7">
+              <CardTitle><User />Contacts</CardTitle>
+              <CardDescription>
+                List of your contacts from your account.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[50px]">
                     <Checkbox id="select-all" />
                   </TableHead>
                   <TableHead>Name</TableHead>
@@ -245,21 +256,16 @@ export default function ContactList({ onContactClick }: ContactListProps) {
                     onClick={() => onContactClick(contact)}
                   >
                     <TableCell>
-                        <Checkbox id="select-all" />
+                      <Checkbox id="select-all" />
                     </TableCell>
                     <TableCell>
                       <div className="font-medium">{contact.contact_last_name} {contact.contact_first_name}</div>
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
-                    {contact.contact_email}
+                      {contact.contact_email}
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
-                      <Badge className="text-xs">
                       {contact.contact_phone}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {format(new Date(contact.created_at), 'd MMMM, yyyy')}
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -271,10 +277,10 @@ export default function ContactList({ onContactClick }: ContactListProps) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => editContact(contact.id, contact.contact_first_name)}>Edit</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openContact(contact.id, contact.contact_first_name)}>Open</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => duplicateContact(contact.id)}>Duplicate</DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => deleteContact(contact.id)}>Delete</DropdownMenuItem>
+                          <DropdownMenuItem className='text-destructive' onClick={() => deleteContact(contact.id)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -315,7 +321,7 @@ export default function ContactList({ onContactClick }: ContactListProps) {
                     onClick={() => onContactClick(group)}
                   >
                     <TableCell>
-                         <Checkbox id="select-all" />
+                      <Checkbox id="select-all" />
                     </TableCell>
                     <TableCell>
                       <div className="font-medium">{group.group_name}</div>
@@ -324,7 +330,7 @@ export default function ContactList({ onContactClick }: ContactListProps) {
                       <div className="font-medium">{group.group_description}</div>
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
-                      {group.contact_count}
+                      {group.contact_count[0].count}
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -351,5 +357,6 @@ export default function ContactList({ onContactClick }: ContactListProps) {
         </Card>
       </TabsContent>
     </Tabs>
+  </ErrorBoundary>
   )
 }

@@ -43,4 +43,3 @@ export function Spinner({ size, show, children, className }: SpinnerContentProps
     </span>
   );
 }
-
