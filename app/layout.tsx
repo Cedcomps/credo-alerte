@@ -1,14 +1,18 @@
 import '../app/globals.css';
-import { Inter as FontSans, Inter } from "next/font/google"
+// import { Inter as FontSans, Inter } from "next/font/google"
+import { Noto_Sans } from 'next/font/google';
 import { ThemeProvider } from '@/components/ThemeProvider';
-
- 
 import { cn } from "@/lib/utils"
  
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
+// const fontSans = FontSans({
+//   subsets: ["latin"],
+//   variable: "--font-sans",
+// })
+const notoSans = Noto_Sans({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-noto-sans',
+});
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -28,8 +32,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
+          "min-h-screen bg-background font-sans antialiased ",
+          notoSans.variable
         )}>
           <ThemeProvider
             attribute="class"

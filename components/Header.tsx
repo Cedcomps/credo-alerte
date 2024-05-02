@@ -1,23 +1,15 @@
 import NextLogo from "./NextLogo";
-import SupabaseLogo from "./SupabaseLogo";
+import CredoAlertLogo from "./CredoAlertLogo";
 
 export default function Header() {
   return (
     <div className="flex flex-col gap-16 items-center">
-      <div className="flex gap-8 justify-center items-center">
-        <a
-          href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <SupabaseLogo />
-        </a>
-        <span className="border-l rotate-45 h-6" />
+      <div className="flex mt-12 gap-4 justify-center items-center">
+          <CredoAlertLogo />
         <a href="https://nextjs.org/" target="_blank" rel="noreferrer">
-          <NextLogo />
         </a>
       </div>
-      <h1 className="sr-only">Credo Alert - Your Emergency Notification Sending Solution</h1>
+      <h1 className="sr-only">CredoAlert - Your Emergency Notification Sending Solution</h1>
       <p className="text-3xl lg:text-4xl !leading-tight mx-auto max-w-xl text-center">
       Be ready to react quickly in a crisis with our instant notification system{" "}
         <a

@@ -18,6 +18,7 @@ import { PanelLeft } from 'lucide-react';
 import DashboardBreadcrumb from './DashboardBreadcrumb';
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
+import CredoAlertLogo from '../CredoAlertLogo';
 
 
 export default function DashboardHeader() {
@@ -50,10 +51,10 @@ const handleLogout = async () => {
           <nav className="grid gap-6 text-lg font-medium">
             <Link
               href="#"
-              className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
+              className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 text-lg font-semibold text-primary-foreground md:text-base"
             >
-              <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
-              <span className="sr-only">Credo Alerte</span>
+              <CredoAlertLogo/>
+              <span className="sr-only">Credo Alert</span>
             </Link>
             <Link
               href="#"

@@ -6,6 +6,8 @@ import { Bell, Gem, BookUser, Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import UpgradePro from "../UpgradePro";
+import CredoAlertLogo from "../CredoAlertLogo";
+import { Separator } from '@/components/ui/separator'
 
 export default function DashboardAside() {
   const pathname = usePathname();
@@ -15,11 +17,11 @@ export default function DashboardAside() {
       <aside className="group fixed inset-y-0 left-0 z-40 hidden w-14 flex-col border-r bg-background transition-all duration-300 ease-in-out hover:w-56 sm:flex ">
         <nav className="flex flex-col items-start gap-4 px-2 sm:py-5">
           <Link
-            href="#"
-            className="ml-1 flex h-9 w-9 shrink-0 items-center justify-center gap-4 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base "
+            href="/dashboard/"
+            className="ml-1 flex h-9 w-9 shrink-0 items-center justify-center gap-4 text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base "
           >
-            <Aperture className="h-4 w-4 transition-all group-hover:scale-120" />
-            <span className="sr-only">Credo Alerte</span>
+            <CredoAlertLogo />
+            <span className="sr-only">Credo Alert</span>
           </Link>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -37,6 +39,7 @@ export default function DashboardAside() {
             </TooltipTrigger>
             <TooltipContent side="right">Dashboard</TooltipContent>
           </Tooltip>
+          <Separator/>
           <Tooltip>
             <TooltipTrigger asChild>
               <Link

@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { VariantProps, cva } from 'class-variance-authority';
-import { Loader2 } from 'lucide-react';
+import CredoAlertLogo from './CredoAlertLogo'; // Importez votre composant logo
 
 const spinnerVariants = cva('flex-col items-center justify-center', {
   variants: {
@@ -15,12 +15,12 @@ const spinnerVariants = cva('flex-col items-center justify-center', {
   },
 });
 
-const loaderVariants = cva('animate-spin text-primary', {
+const logoVariants = cva('animate-spin text-primary', {
   variants: {
     size: {
-      small: 'size-6',
-      medium: 'size-8',
-      large: 'size-12',
+      small: 'w-6 h-6',
+      medium: 'w-8 h-8',
+      large: 'w-12 h-12',
     },
   },
   defaultVariants: {
@@ -30,7 +30,7 @@ const loaderVariants = cva('animate-spin text-primary', {
 
 interface SpinnerContentProps
   extends VariantProps<typeof spinnerVariants>,
-    VariantProps<typeof loaderVariants> {
+    VariantProps<typeof logoVariants> {
   className?: string;
   children?: React.ReactNode;
 }
@@ -38,7 +38,7 @@ interface SpinnerContentProps
 export function Spinner({ size, show, children, className }: SpinnerContentProps) {
   return (
     <span className={spinnerVariants({ show })}>
-      <Loader2 className={cn(loaderVariants({ size }), className)} />
+      <CredoAlertLogo className={cn(logoVariants({ size }), className)} />
       {children}
     </span>
   );

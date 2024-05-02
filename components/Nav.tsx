@@ -1,18 +1,18 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import CredoAlerteLogo from './CredoAlerteLogo';
+import CredoAlertLogo from './CredoAlertLogo';
 import { ModeToggle } from './ui/ModeToggle';
 
 export default function Navbar() {
   return (
     <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <ModeToggle />
+        {/* <ModeToggle /> */}
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-          <CredoAlerteLogo />
+        <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse ">
+          <CredoAlertLogo className='h-9 w-9'/>
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-            CredoAlerte
+            CredoAlert
           </span>
         </Link>
 
