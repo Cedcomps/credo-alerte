@@ -37,6 +37,9 @@ const handleLogout = async () => {
     console.error('Error signing out:', error)
   }
 }
+const handleUserAccount = async () => {
+      router.push('/dashboard/account')
+    }
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -117,7 +120,7 @@ const handleLogout = async () => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleUserAccount}>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>

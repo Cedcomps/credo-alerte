@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import DashboardAside from "@/components/dashboard/DashboardAside";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { Toaster } from "@/components/ui/toaster"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -33,6 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex flex-col sm:gap-4">
             {children}
           </div>
+          <Toaster />
         </div>
       </div>
     </>
