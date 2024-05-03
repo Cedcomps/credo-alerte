@@ -168,19 +168,15 @@ export default function ContactDetails({ selectedContact }: ContactDetailsProps)
                       className="col-span-3"
                       defaultCountry="FR"
                       error={phone ? (isValidPhoneNumber(phone) ? undefined : 'Invalid phone number') : 'Phone number required'}
-                      inputClass="w-full shadow-md rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                      inputClassName="w-full shadow-md rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 input input-bordered w-full"
-    containerClassName="flex items-center"
-  // Vous pouvez ajouter d'autres classes personnalisées de votre thème Shadow CSS au besoin
-  countrySelectClass=" --PhoneInput-color--focus — Flag icon :focus w-full shadow-md rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-  buttonClass="bg-blue-500 text-white p-2 rounded"
-                      />
+                      countrySelectProps={{
+                        className: "w-full shadow-md rounded-lg border focus-primary",
+                      }}
+                    />
                   </div>
-
                 </div>
                 <SheetFooter>
                   <SheetClose asChild>
-                    <Button type="button">
+                    <Button type="button" variant={"secondary"}>
                       Cancel
                     </Button>
                   </SheetClose>

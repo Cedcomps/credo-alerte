@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/client"
 import { useState, useEffect } from 'react'
 import ErrorMessage from '@/components/ErrorMessage'
 import { Spinner } from '@/components/Spinner'
+import { Bell } from "lucide-react"
 
 interface AlertCountProps {
   description: string
@@ -32,7 +33,8 @@ const AlertCount = ({ description }: AlertCountProps) => {
             .from('alerts')
             .select('*', { count: 'exact', head: true })
             .eq('user_id', user.id)
-          
+            .eq('status', true);
+
             setCount(Math.min(count ?? 0, MAX_QUOTA))
           }
       } catch (err) {
@@ -46,7 +48,7 @@ const AlertCount = ({ description }: AlertCountProps) => {
   }, [])
 
   if (loading) {
-    return <Spinner size="large">Loading the number of alerts...</Spinner>
+    return <Spinner size="large">Loading activable alerts...</Spinner>
   }
 
   if (error) {
@@ -56,19 +58,20 @@ const AlertCount = ({ description }: AlertCountProps) => {
   return (
     <ErrorBoundary>
       <Card>
-        <CardHeader className="pb-2">
-          {/* <CardDescription>Alerts created</CardDescription> */}
-          <CardTitle className="text-4xl">{count}</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          {/* <CardDescription></CardDescription> */}
+          <CardTitle className="text-sm font-medium">Activable </CardTitle>
+          <Bell className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
+           <div className="text-4xl font-bold">{count}</div>
           <div className="text-xs text-muted-foreground">{description}</div>
         </CardContent>
-        <CardFooter>
+        {/* <CardFooter>
         <Progress value={count} max={MAX_QUOTA} aria-label="Alert count" />  
-        </CardFooter>
+        </CardFooter> */}
       </Card>
     </ErrorBoundary>
   )
 }
-
 export default AlertCount

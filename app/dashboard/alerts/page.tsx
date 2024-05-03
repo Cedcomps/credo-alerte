@@ -1,11 +1,10 @@
 'use client'
-import DashboardNewElement from "@/components/dashboard/DashboardNewElement";
 import AlertList from "@/components/alerts/AlertList";
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
 import AlertDetails from "@/components/alerts/AlertDetails";
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import UserInfo from "@/components/UserInfo";
 import AlertCount from "@/components/alerts/AlertCount";
+import AlertNewElement from "@/components/alerts/AlertNewElement";
 
 export default function DashboardAlerts() {
   const [selectedAlert, setSelectedAlert] = useState(null);
@@ -19,8 +18,8 @@ export default function DashboardAlerts() {
     <main className="flex flex-col gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       {/* DashboardNewElement */}
       <div className="md:flex md:gap-6">
-        <DashboardNewElement menuName="alert" />
-        <AlertCount description={"Alerts created"}/>
+        <AlertNewElement/>
+        <AlertCount description={"Activable Alerts"}/>
       </div>
       {/* AlertList et AlertDetails */}
       <div className="md:flex md:gap-4">

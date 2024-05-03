@@ -21,14 +21,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { EllipsisVertical } from "lucide-react";
+import { Bell, BellRing, EllipsisVertical } from "lucide-react";
 import { ListFilter } from "lucide-react";
 import { format, formatDistanceToNow, parseISO } from 'date-fns';
 import AlertSwitch from "@/components/alerts/AlertSwitch";
 import { createClient } from "@/utils/supabase/client";
-import { PostgrestError } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { ErrorBoundary } from '../ErrorBoundary';
+import AlertTrigger from './AlertTrigger';
 
 interface AlertListProps {
     onAlertClick: (alert: any) => void;
@@ -45,6 +45,7 @@ interface AlertListProps {
     const handleSortByChange = (value: string) => {
         setSortBy(value);
     };
+    
       
     useEffect(() => {
         const fetchAlerts = async () => {
@@ -88,7 +89,7 @@ interface AlertListProps {
     
         fetchAlerts();
       }, [filter, sortBy]);
-      
+//  Filtre des alertes actives ou inactives ou all 
     const filteredAlerts = alerts.filter((alert) => {
         if (filter === 'active') {
             return alert.status === true;
@@ -97,7 +98,7 @@ interface AlertListProps {
         }
         return true;
     });
-
+// Toggle sur l'actication ou non de l'alerte
     const handleAlertToggle = (alertId: string, newStatus: boolean) => {
         setAlerts((prevAlerts) =>
           prevAlerts.map((alert) =>
@@ -105,7 +106,13 @@ interface AlertListProps {
           )
         );
       };
-    
+// declenchement d'alert
+    const handleAlertTrigger = (alertId: string) => {
+    // Logique pour déclencher l'alerte avec l'ID spécifié
+    console.log('Triggering alert with ID:', alertId);
+    };
+      
+// tri des alertes
     const getSortByLabel = (sortBy: string) => {
         switch (sortBy) {
           case 'last_updated':
@@ -233,17 +240,18 @@ interface AlertListProps {
             </div>
             <TabsContent value="all">
                 <Card x-chunk="dashboard-05-chunk-3">
-                    <CardHeader className="px-7">
+                    {/* <CardHeader className="px-7">
                         <CardTitle>Alerts</CardTitle>
                         <CardDescription>
                             All your alerts from your account.
                         </CardDescription>
-                    </CardHeader>
+                    </CardHeader> */}
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Alert Name</TableHead>
+                                <TableHead></TableHead>
+                                <TableHead>Alert Name</TableHead>
                                     <TableHead className="hidden sm:table-cell">
                                         Description
                                     </TableHead>
@@ -261,10 +269,15 @@ interface AlertListProps {
                             </TableHeader>
                             <TableBody>
                                 {filteredAlerts.map((alert) => (
-                                    <TableRow
+                                <TableRow
                                     key={alert.id}
                                     onClick={() => onAlertClick(alert)}
                                   >                
+                                   <TableCell className="text-right">
+                                    {alert.status && (
+                                        <AlertTrigger alertId={alert.id} onAlertTrigger={handleAlertTrigger} />
+                                    )}
+                                    </TableCell>
                                         <TableCell>
                                             <div className="font-medium">{alert.alert_name}</div>
                                             <div className="hidden text-sm text-muted-foreground md:inline">
@@ -289,7 +302,7 @@ interface AlertListProps {
                                             <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" className="h-8 w-8 p-0">
-                                                <span className="sr-only">Open menu</span>
+                                                <span className="sr-only">Open menu</span>  
                                                 <EllipsisVertical className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
@@ -311,17 +324,18 @@ interface AlertListProps {
             </TabsContent>
             <TabsContent value="active">
                 <Card x-chunk="dashboard-05-chunk-3">
-                    <CardHeader className="px-7">
+                    {/* <CardHeader className="px-7">
                         <CardTitle>Active Alerts</CardTitle>
                         <CardDescription>
                             Recent active alerts from your account.
                         </CardDescription>
-                    </CardHeader>
+                    </CardHeader> */}
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Alert Name</TableHead>
+                                <TableHead> </TableHead>
+                                <TableHead>Alert Name</TableHead>
                                     <TableHead className="hidden sm:table-cell">
                                         Description
                                     </TableHead>
@@ -343,6 +357,11 @@ interface AlertListProps {
                                     key={alert.id}
                                     onClick={() => onAlertClick(alert)}
                                   >
+                                    <TableCell className="text-right">
+                                    {alert.status && (
+                                        <AlertTrigger alertId={alert.id} onAlertTrigger={handleAlertTrigger} />
+                                    )}
+                                    </TableCell>
                                         <TableCell>
                                             <div className="font-medium">{alert.alert_name}</div>
                                             <div className="hidden text-sm text-muted-foreground md:inline">
@@ -390,12 +409,12 @@ interface AlertListProps {
             </TabsContent>
             <TabsContent value="inactive">
                 <Card x-chunk="dashboard-05-chunk-3">
-                    <CardHeader className="px-7">
+                    {/* <CardHeader className="px-7">
                         <CardTitle>Inactive Alerts</CardTitle>
                         <CardDescription>
                             Inactive alerts in your account.
                         </CardDescription>
-                    </CardHeader>
+                    </CardHeader> */}
                     <CardContent>
                         <Table>
                             <TableHeader>
