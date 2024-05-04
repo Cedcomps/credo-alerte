@@ -9,20 +9,13 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
 import { Toaster } from "@/components/ui/sonner"
-import { toast } from "sonner"
-
-
+import { useToast } from "@/components/ui/use-toast"
 
 interface AlertData {
   alert_name: string;
   alert_description: string;
   alert_message: string;
-  // eventCategory: string;
-  // guidanceToReact: string;
-  // launchDate: Date;
-  // alertDuration: string;
 }
-
 
 const createAlert = async (alertData: AlertData) => {
   const supabase = createClient();
@@ -43,18 +36,20 @@ export default function NewAlert() {
   const [alert_name, setAlertName] = useState('');
   const [alert_description, setAlertDescription] = useState('');
   const [alert_message, setAlertMessage] = useState('');
-  // const [eventCategory, setEventCategory] = useState('');
-  // const [guidanceToReact, setGuidanceToReact] = useState('');
-  // const [launchDate, setLaunchDate] = useState(new Date());
-  // const [alertDuration, setAlertDuration] = useState('1 hour');
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [isNextDisabled, setIsNextDisabled] = useState(true);
+  const { toast } = useToast();
 
-const handleShowSuccessAlert = () => {
-  setShowSuccessAlert(true);
-  setTimeout(() => {
-    setShowSuccessAlert(false);
-  }, 3000); // Masquer l'alerte après 3 secondes
-};
+  const handleShowSuccessAlert = () => {
+    setShowSuccessAlert(true);
+    setTimeout(() => {
+      setShowSuccessAlert(false);
+    }, 3000);
+    toast({
+      title: 'Success',
+      description: 'Alert created, deploy it when you are ready',
+    });
+  };
 
   const handleNextStep = () => {
     setCurrentStep(currentStep + 1);
@@ -63,14 +58,16 @@ const handleShowSuccessAlert = () => {
   const handlePrevStep = () => {
     setCurrentStep(currentStep - 1);
   };
+
   const handleCreateAlert = async () => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    console.log('Aucun utilisateur authentifié');
-    return;
-  }
+    if (!user) {
+      console.log('Aucun utilisateur authentifié');
+      return;
+    }
+
     const alertData = {
       alert_name,
       alert_description,
@@ -78,17 +75,16 @@ const handleShowSuccessAlert = () => {
       user_id: user.id,
     };
   
-    const newAlert = await createAlert(alertData); // Attendez ici
+    const newAlert = await createAlert(alertData);
   
     if (newAlert) {
       const alertId = newAlert.id;
       handleShowSuccessAlert();
       router.push(`/dashboard/alerts/${alertId}`);
-      }
+    }
   };
   
   return (
-    
     <div className="mx-auto">
       <h1 className="text-3xl font-bold">Create Alert</h1>
       <Separator className="my-4" />
@@ -101,20 +97,13 @@ const handleShowSuccessAlert = () => {
           setAlertName={setAlertName}
           alert_description={alert_description}
           setAlertDescription={setAlertDescription}
+          setIsNextDisabled={setIsNextDisabled}
         />
       )}
       {currentStep === 1 && (
         <AlertContent
           alert_message={alert_message}
           setAlertMessage={setAlertMessage}
-          // eventCategory={eventCategory}
-          // setEventCategory={setEventCategory}
-          // guidanceToReact={guidanceToReact}
-          // setGuidanceToReact={setGuidanceToReact}
-          // launchDate={launchDate}
-          // setLaunchDate={setLaunchDate}
-          // alertDuration={alertDuration}
-          // setAlertDuration={setAlertDuration}
         />
       )}
       {currentStep === 2 && (
@@ -122,10 +111,6 @@ const handleShowSuccessAlert = () => {
           alert_name={alert_name}
           alert_description={alert_description}
           alert_message={alert_message}
-          // eventCategory={eventCategory}
-          // guidanceToReact={guidanceToReact}
-          // launchDate={launchDate}
-          // alertDuration={alertDuration}
         />
       )}
 
@@ -136,14 +121,13 @@ const handleShowSuccessAlert = () => {
           </Button>
         )}
         {currentStep < 2 ? (
-          <Button onClick={handleNextStep}>Next</Button>
+          <Button onClick={handleNextStep} disabled={isNextDisabled}>
+            Next
+          </Button>
         ) : (
           <Button onClick={handleCreateAlert}>Create Alert</Button>
         )}
-        {showSuccessAlert && (
-              <Toaster />
-              
-    )}
+        {showSuccessAlert && <Toaster />}
       </div>
     </div>
   );

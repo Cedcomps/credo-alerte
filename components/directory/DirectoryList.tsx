@@ -13,12 +13,13 @@ import { useRouter } from 'next/navigation';
 import { Checkbox } from '../ui/checkbox';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { Spinner } from '@/components/Spinner'
+import EditContact from './EditContact';
 
-interface ContactListProps {
+
+interface DirectoryListProps {
   onContactClick: (contact: any) => void;
 }
-
-export default function ContactList({ onContactClick }: ContactListProps) {
+export default function DirectoryList({ onContactClick }: DirectoryListProps) {
   const supabase = createClient()
   const [contacts, setContacts] = useState<any[]>([]);
   const [groups, setGroups] = useState<any[]>([]);

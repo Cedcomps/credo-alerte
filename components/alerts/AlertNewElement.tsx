@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 export default function AlertNewElement() {
   const router = useRouter();
   const handleCreateNewClick = () => {
-      router.push('/alert/alerts/create');
+      router.push('/dashboard/alerts/create');
   };
 
   return (

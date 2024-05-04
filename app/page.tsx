@@ -74,11 +74,16 @@ export default async function Index() {
     <AccordionItem value="item-4">
       <AccordionTrigger>How does Credo Alert compare to other crisis management providers?</AccordionTrigger>
       <AccordionContent>
-        While there are well-known crisis management providers like F24, Everbridge, and OnSolve, Credo Alerte differentiates itself through its simplicity and affordability. We focus on providing the essential features you need to effectively manage and communicate during a crisis, without the complexity and high costs often associated with feature-heavy solutions.
+      The answer comes down to two words: simplicity and affordability.
+      <br /><br />
+We designed CredoAlert with a clear goal in mind: to make emergency alert management accessible to everyone, regardless of the size of your organization or your technical expertise. Where platforms like Everbridge, Singlewire, Navigate360, or Alertus can seem complex and oversized, CredoAlert offers you a streamlined and intuitive user experience. Send your alerts with just a few clicks, without getting lost in unnecessary features.
+<br /><br />
+This simplicity does not come at the expense of effectiveness. On the contrary, it allows you to save precious time in a crisis situation. When every second counts, you can count on CredoAlert to broadcast your emergency messages as reliably and quickly as Rave Mobile Safety, Restrata, F24, or Crisis24.
+<br /><br />
+We also believe that security should not be a luxury. That's why we wanted to make CredoAlert affordable, especially for small businesses and communities that often have limited budgets. Unlike AlertMedia, Noggin, OnSolve, or Vismo, which can represent a significant investment, CredoAlert offers you excellent value for money. You benefit from a high-performance and secure alert system without breaking the bank.
+<br /><br />
+With CredoAlert, emergency management is no longer reserved for large organizations. Regardless of your size, you can now ensure the safety of your teams and your citizens in a simple and affordable way. That's our difference.
         <br /><br />
-        Our intuitive interface and streamlined processes ensure that you can quickly and easily send emergency notifications when it matters most. We believe that a crisis management solution should be accessible to organizations of all sizes, which is why we offer our service at a price point that is up to 10 times more affordable than our competitors.
-        <br /><br />
-        With Credo Alert, you get a powerful yet simple solution that allows you to focus on what's important during a crisis: communicating with your team and stakeholders to ensure their safety and well-being.
       </AccordionContent>
     </AccordionItem>
   </Accordion>

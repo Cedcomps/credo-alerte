@@ -10,6 +10,7 @@ import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from 'next/navigation'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { CheckCircle2Icon, CircleIcon } from 'lucide-react'
 
 export default function ChangePassword() {
   const [newPassword, setNewPassword] = useState('')
@@ -116,19 +117,44 @@ export default function ChangePassword() {
               <div>
                 <Label>Password Requirements:</Label>
                 <ul className="list-disc pl-6">
-                  <li className={passwordRequirements.lowercase ? 'text-green-500' : 'text-red-500'}>
+                  <li className={passwordRequirements.lowercase ? 'text-green-500 flex items-center' : 'text-red-500 flex items-center'}>
+                    {passwordRequirements.lowercase ? (
+                      <CheckCircle2Icon className="h-4 w-4 text-green-500 mr-2" />
+                    ) : (
+                      <CircleIcon className="h-4 w-4 text-gray-500 mr-2" />
+                    )}
                     Lowercase letter
                   </li>
-                  <li className={passwordRequirements.uppercase ? 'text-green-500' : 'text-red-500'}>
+                  <li className={passwordRequirements.uppercase ? 'text-green-500 flex items-center' : 'text-red-500 flex items-center'}>
+                    {passwordRequirements.uppercase ? (
+                      <CheckCircle2Icon className="h-4 w-4 text-green-500 mr-2" />
+                    ) : (
+                      <CircleIcon className="h-4 w-4 text-gray-500 mr-2" />
+                    )}
                     Uppercase letter
                   </li>
-                  <li className={passwordRequirements.digit ? 'text-green-500' : 'text-red-500'}>
+                  <li className={passwordRequirements.digit ? 'text-green-500 flex items-center' : 'text-red-500 flex items-center'}>
+                    {passwordRequirements.digit ? (
+                      <CheckCircle2Icon className="h-4 w-4 text-green-500 mr-2" />
+                    ) : (
+                      <CircleIcon className="h-4 w-4 text-gray-500 mr-2" />
+                    )}
                     Digit
                   </li>
-                  <li className={passwordRequirements.symbol ? 'text-green-500' : 'text-red-500'}>
+                  <li className={passwordRequirements.symbol ? 'text-green-500 flex items-center' : 'text-red-500 flex items-center'}>
+                    {passwordRequirements.symbol ? (
+                      <CheckCircle2Icon className="h-4 w-4 text-green-500 mr-2" />
+                    ) : (
+                      <CircleIcon className="h-4 w-4 text-gray-500 mr-2" />
+                    )}
                     Symbol
                   </li>
-                  <li className={passwordRequirements.length ? 'text-green-500' : 'text-red-500'}>
+                  <li className={passwordRequirements.length ? 'text-green-500 flex items-center' : 'text-red-500 flex items-center'}>
+                    {passwordRequirements.length ? (
+                      <CheckCircle2Icon className="h-4 w-4 text-green-500 mr-2" />
+                    ) : (
+                      <CircleIcon className="h-4 w-4 text-gray-500 mr-2" />
+                    )}
                     Minimum 8 characters
                   </li>
                 </ul>

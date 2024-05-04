@@ -33,18 +33,19 @@ export const AlertContent: React.FC<AlertContentProps> = ({
 }) => {
   return (
     <div>
-            <ErrorBoundary>
-
+      <ErrorBoundary>
       <Card>
-        <CardHeader>
-          <CardTitle>Alert Content</CardTitle>
+      <CardHeader  className="flex flex-row items-start bg-muted/50">
+      <div className="grid gap-0.5">
+        <CardTitle className="group flex items-center gap-2 text-lg">Alert Content</CardTitle>
           <CardDescription>
-            Write an decisive message for people wno will receive the alert.
+          Write a decisive message for people who will receive the alert.
           </CardDescription>
-        </CardHeader>
+      </div>
+      </CardHeader>
         <CardContent>
-      <div className="mb-4">
-        <Label htmlFor="alert_message" className="mb-2">
+      <div className="mb-4 ">
+        <Label htmlFor="alert_message" className="mb-2 ">
           Alert message
         </Label>
         <Textarea
