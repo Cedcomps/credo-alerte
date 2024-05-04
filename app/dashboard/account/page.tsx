@@ -74,7 +74,7 @@ export default function ProfileSettings() {
     } else {
       toast({
         title: 'Success',
-        description: 'Email updated successfully.',
+        description: 'An email has been sent with instructions to reset your password.',
       });
       setEmail(user?.email ?? '');
       setNewEmail('');
