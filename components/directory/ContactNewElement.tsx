@@ -109,7 +109,9 @@ export default function ContactNewElement() {
           description: "The contact has been successfully added to the database.",
         });
         setOpen(false);
-        
+        supabase
+        .channel('public:contacts')
+        .send({ type: 'broadcast', event: 'INSERT' });
         resetForm();
       }
     } else {
@@ -129,6 +131,7 @@ export default function ContactNewElement() {
           description: "The group has been successfully added to the database.",
         });
         setOpen(false);
+        
         resetForm();
         
       }

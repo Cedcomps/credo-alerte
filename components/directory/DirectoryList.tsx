@@ -13,8 +13,17 @@ import { useRouter } from 'next/navigation';
 import { Checkbox } from '../ui/checkbox';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { Spinner } from '@/components/Spinner'
-import EditContact from './EditContact';
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface DirectoryListProps {
   onContactClick: (contact: any) => void;
@@ -26,6 +35,8 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
   const [sortBy, setSortBy] = useState('last_updated');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [contactToDelete, setContactToDelete] = useState<string | null>(null);
+  const [groupToDelete, setGroupToDelete] = useState<string | null>(null);
 
   const handleSortByChange = (value: string) => {
     setSortBy(value);
@@ -94,12 +105,35 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
     };
 
     fetchData();
-  }, [sortBy]);
+    // Souscrire aux changements en temps réel pour les contacts
+    const contactListener = supabase
+    .channel('public:contacts')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'contacts' },
+      () => fetchData()
+    )
+    .subscribe();
 
+    // Souscrire aux changements en temps réel pour les groupes
+    const groupListener = supabase
+    .channel('public:groups')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'groups' },
+      () => fetchData()
+    )
+    .subscribe();
+
+    // Nettoyer les abonnements lors du démontage du composant
+    return () => {
+    contactListener.unsubscribe();
+    groupListener.unsubscribe();
+    };
+    }, [sortBy]);
   // if (isLoading) {
   //   return <Spinner size="large">Loading contacts...</Spinner>
   // }
-
 
   const getSortByLabel = (sortBy: string) => {
     switch (sortBy) {
@@ -116,11 +150,49 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
     }
   };
 
-  const router = useRouter();
-  const openContact = async (contactId: string, contactName: string) => {
-    router.push(`/dashboard/directory/contacts/${contactId}?name=${encodeURIComponent(contactName)}`);
-  };
+  // const router = useRouter();
+  // const openContact = async (contactId: string, contactName: string) => {
+  //   router.push(`/dashboard/directory/contacts/${contactId}?name=${encodeURIComponent(contactName)}`);
+  // };
+  //duplicate group 
+  const duplicateGroup = async (groupId: string) => {
+    const { data: group, error } = await supabase
+      .from('groups')
+      .select('*')
+      .eq('id', groupId)
+      .single();
 
+    if (error) {
+      console.error('Error fetching group:', error);
+      return;
+    }
+
+    // Générer un nouvel ID unique avec uuid
+    const newGroupId = uuidv4();
+
+    // Obtenir la date et l'heure actuelles au format ISO 8601
+    const now = new Date().toISOString();
+
+    const { data: duplicatedGroup, error: insertError } = await supabase
+      .from('groups')
+      .insert({
+        ...group,
+        id: newGroupId,
+        group_name: `${group.group_name} (copy)`,
+        group_description: `${group.group_description} (copy)`,
+        created_at: now,
+        updated_at: now
+      })
+      .select('*')
+      .single();
+
+    if (insertError) {
+      console.error('Error duplicating group:', insertError);
+    } else {
+      setGroups([...groups, duplicatedGroup]);
+    }
+  };
+//duplicate contact
   const duplicateContact = async (contactId: string) => {
     const { data: contact, error } = await supabase
       .from('contacts')
@@ -158,22 +230,72 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
       setContacts([...contacts, duplicatedContact]);
     }
   };
+  //delete group
+  const deleteGroup = async (groupId: string) => {
+    setGroupToDelete(groupId);
+  };
 
+  const handleConfirmDeleteGroup = async () => {
+    if (groupToDelete) {
+      const { data, error } = await supabase
+        .from("groups")
+        .delete()
+        .eq("id", groupToDelete)
+        .select();
+
+      if (error) {
+        console.error("Error deleting group:", error);
+      } else {
+        // Mettre à jour l'état groups avec la nouvelle liste filtrée
+        setGroups(groups.filter((group) => group.id !== groupToDelete));
+        setGroupToDelete(null);
+      }
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setContactToDelete(null);
+    setGroupToDelete(null);
+  };
+//Delete contact
   const deleteContact = async (contactId: string) => {
-    const { error } = await supabase
-      .from('contacts')
-      .delete()
-      .eq('id', contactId);
+    setContactToDelete(contactId);
+  };
 
-    if (error) {
-      console.error('Error deleting contact:', error);
-    } else {
-      setContacts(contacts.filter((contact) => contact.id !== contactId));
+  const handleConfirmDelete = async () => {
+    if (contactToDelete) {
+      const { error } = await supabase.from("contacts").delete().eq("id", contactToDelete);
+
+      if (error) {
+        console.error("Error deleting contact:", error);
+      } else {
+        setContacts(contacts.filter((contact) => contact.id !== contactToDelete));
+        setContactToDelete(null);
+      }
     }
   };
 
   return (
     <ErrorBoundary>
+      <AlertDialog open={contactToDelete !== null || groupToDelete !== null} onOpenChange={handleCancelDelete}>
+        <AlertDialogTrigger>
+          {/* Rien à afficher ici, le déclencheur est géré par le bouton "Delete" */}
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure ?</AlertDialogTitle>
+            <AlertDialogDescription>
+            This action will permanently remove the contact from your directory. This operation is irreversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={contactToDelete ? handleConfirmDelete : handleConfirmDeleteGroup}>
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <Tabs defaultValue="contacts">
         <div className="flex items-center">
           <TabsList>
@@ -278,10 +400,12 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => openContact(contact.id, contact.contact_first_name)}>Open</DropdownMenuItem>
+                          {/* <DropdownMenuItem onClick={() => openContact(contact.id, contact.contact_first_name)}>Open</DropdownMenuItem> */}
                           <DropdownMenuItem onClick={() => duplicateContact(contact.id)}>Duplicate</DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className='text-destructive' onClick={() => deleteContact(contact.id)}>Delete</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive" onClick={() => deleteContact(contact.id)}>
+                            Delete
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -331,7 +455,9 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
                       <div className="font-medium">{group.group_description}</div>
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
-                      {group.contact_count[0].count}
+                      {group.contact_count && group.contact_count[0]
+                        ? group.contact_count[0].count
+                        : 0}
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -343,10 +469,14 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Duplicate</DropdownMenuItem>
+                          {/* <DropdownMenuItem onClick={() => openContact(group.id, group.contact_first_name)}>Open</DropdownMenuItem> */}
+                          <DropdownMenuItem onClick={() => duplicateGroup(group.id)}>
+                            Duplicate
+                          </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive" onClick={() => deleteGroup(group.id)}>
+                            Delete
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

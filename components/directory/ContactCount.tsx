@@ -10,40 +10,58 @@ import { Spinner } from '@/components/Spinner'
 interface ContactCountProps {
   description: string
 }
-const MAX_QUOTA = 10;
+const MAX_QUOTA = 20;
 
 const ContactCount = ({ description }: ContactCountProps) => {
   const [count, setCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  
+
+  const supabase = createClient();
+
   useEffect(() => {
     const fetchContactCount = async () => {
       try {
-        // Créer un client Supabase
-        const supabase = createClient()
-
         // Récupérer l'ID de l'utilisateur connecté  
-        const { data: { user } } = await supabase.auth.getUser()
-        
+        const { data: { user } } = await supabase.auth.getUser();
+  
         if (user) {
-          // Compter les alertes pour cet utilisateur
+          // Compter les contacts pour cet utilisateur
           const { count } = await supabase
             .from('contacts')
             .select('*', { count: 'exact', head: true })
-            .eq('user_id', user.id)
-          
-            setCount(Math.min(count ?? 0, MAX_QUOTA))
-          }
+            .eq('user_id', user.id);
+  
+          setCount(Math.min(count ?? 0, MAX_QUOTA));
+        }
       } catch (err) {
-        setError('Failed to fetch contact count')
+        setError('Failed to fetch contact count');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-
-    fetchContactCount()
-  }, [])
+    };
+  
+    fetchContactCount();
+  
+    // Souscrire aux changements en temps réel pour les contacts
+    const contactListener = supabase
+      .channel('public:contacts')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'contacts' },
+        () => {
+          fetchContactCount(); // Appeler la fonction
+          setLoading(true); // Afficher le spinner pendant le chargement
+        }
+      )
+      .subscribe();
+  
+    // Nettoyer l'abonnement lors du démontage du composant
+    return () => {
+      contactListener.unsubscribe();
+    };
+  }, []);
+  
 
   if (loading) {
     return <Spinner size="large">Loading the number of contacts...</Spinner>
