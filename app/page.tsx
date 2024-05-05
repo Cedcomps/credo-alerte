@@ -1,7 +1,9 @@
+
 import { createClient } from "@/utils/supabase/server";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Navbar from "@/components/Nav";
 import { ClientHeader, ClientFetchDataSteps } from './client/ClientComponents';
+import { ClientRecentSignups, Subscriber } from "@/components/ClientRecentSignups";
 
 export default async function Index() {
   const canInitSupabaseClient = () => {
@@ -13,8 +15,25 @@ export default async function Index() {
     }
   };
   console.log('Rendering on the server');
-
   const isSupabaseConnected = canInitSupabaseClient();
+//alert toast new members
+  const supabase = createClient();
+
+  const { count } = await supabase
+  .from('subscribers')
+  .select('*', { count: 'exact', head: true });
+
+const safeCount = count ?? 0;
+const randomOffset = Math.floor(Math.random() * safeCount);
+
+const { data: recentSubscribers } = await supabase
+  .from('subscribers')
+  .select('id, email, edition, created_at')
+  .range(randomOffset, randomOffset + 2)
+  .limit(10);
+
+
+  const safeRecentSubscribers: Subscriber[] = recentSubscribers ?? [];
 
   return (
     <div className="flex-1 w-full flex flex-col gap-20 items-center">
@@ -40,7 +59,7 @@ export default async function Index() {
               </div>
             </div>
           </section>
-
+          <ClientRecentSignups recentSubscribers={safeRecentSubscribers} />
           <section className="cta">
             <h2 className="text-4xl font-bold mb-4">Ready to Secure Your Business?</h2>
             <p className="text-xl mb-8">Sign up now and benefit from the 30-day Pro edition.</p>
@@ -51,9 +70,15 @@ export default async function Index() {
   <h2 className="text-4xl font-bold mb-8">Frequently Asked Questions</h2>
   <Accordion type="single" collapsible>
     <AccordionItem value="item-1">
-      <AccordionTrigger>How can I configure my emergency notifications?</AccordionTrigger>
+      <AccordionTrigger>Why is Credo Alert so affordably priced?</AccordionTrigger>
       <AccordionContent>
-        You can configure your emergency notifications by logging into your Credo Alert account and accessing the notification settings. There, you can customize messages, choose recipients, and define alert triggers.
+lorem ipsum
+      </AccordionContent>
+    </AccordionItem>
+    <AccordionItem value="item-1">
+      <AccordionTrigger>What are the differences between the Starter, Pro, and Enterprise Plan?</AccordionTrigger>
+      <AccordionContent>
+lorem isSupabaseConnected
       </AccordionContent>
     </AccordionItem>
 
@@ -88,11 +113,8 @@ With CredoAlert, emergency management is no longer reserved for large organizati
     </AccordionItem>
   </Accordion>
 </section>
-
         </div>
       </div>
-
-     
     </div>
   );
 }
