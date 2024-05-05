@@ -16,7 +16,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Credo Alerte",
+  title: "Credo Alert",
   description: "The fastest way to send emergency notification",
   icons: {
     icon: [

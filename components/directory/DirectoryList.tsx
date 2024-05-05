@@ -24,7 +24,25 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+// import {
+//   Pagination,
+//   PaginationContent,
+//   PaginationEllipsis,
+//   PaginationItem,
+//   PaginationLink,
+//   PaginationNext,
+//   PaginationPrevious,
+// } from "@/components/ui/pagination"
 
+// interface PaginationProps {
+//   currentPage: number;
+//   totalItems: number;
+//   itemsPerPage: number;
+//   onPageChange: (page: number) => void;
+// }
+// interface PaginationItemProps {
+//   isActive: boolean;
+// }
 interface DirectoryListProps {
   onContactClick: (contact: any) => void;
 }
@@ -37,6 +55,8 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
   const [error, setError] = useState<string | null>(null);
   const [contactToDelete, setContactToDelete] = useState<string | null>(null);
   const [groupToDelete, setGroupToDelete] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const handleSortByChange = (value: string) => {
     setSortBy(value);
@@ -57,7 +77,8 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
         let contactsQuery = supabase
           .from('contacts')
           .select('*')
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          // .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1); // Ajouter la pagination
         
         let groupsQuery = supabase
           .from('groups')
@@ -66,7 +87,9 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
             contact_count:contact_group(count)
           `)
           .eq('user_id', user.id)
-          .order('updated_at', { ascending: false });
+          .order('updated_at', { ascending: false })
+          // .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1); // Ajouter la pagination
+
 
         if (sortBy === 'last_updated') {
           contactsQuery = contactsQuery.order('updated_at', { ascending: false });
@@ -110,7 +133,7 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
     .channel('public:contacts')
     .on(
       'postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'contacts' },
+      { event: '*', schema: 'public', table: 'contacts' },
       () => fetchData()
     )
     .subscribe();
@@ -120,7 +143,7 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
     .channel('public:groups')
     .on(
       'postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'groups' },
+      { event: '*', schema: 'public', table: 'groups' },
       () => fetchData()
     )
     .subscribe();
@@ -134,7 +157,9 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
   // if (isLoading) {
   //   return <Spinner size="large">Loading contacts...</Spinner>
   // }
-
+  // const handlePageChange = (page: number) => {
+  //   setCurrentPage(page);
+  // };
   const getSortByLabel = (sortBy: string) => {
     switch (sortBy) {
       case 'last_updated':
@@ -488,6 +513,25 @@ export default function DirectoryList({ onContactClick }: DirectoryListProps) {
         </Card>
       </TabsContent>
     </Tabs>
+    {/* <Pagination
+      currentPage={currentPage}
+      totalItems={contacts.length + groups.length}
+      itemsPerPage={itemsPerPage}
+      onPageChange={handlePageChange}
+    >
+      <PaginationPrevious>Previous</PaginationPrevious>
+      <PaginationContent>
+        {Array.from({ length: Math.ceil((contacts.length + groups.length) / itemsPerPage) }, (_, i) => (
+          <PaginationItem key={i + 1} isActive={i + 1 === currentPage}>
+            <PaginationLink href="#" onClick={() => handlePageChange(i + 1)}>
+              {i + 1}
+            </PaginationLink>
+          </PaginationItem>
+        ))}
+      </PaginationContent>
+      <PaginationNext>Next</PaginationNext>
+    </Pagination> */}
+
   </ErrorBoundary>
   )
 }

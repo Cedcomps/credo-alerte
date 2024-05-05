@@ -10,7 +10,6 @@ import { Spinner } from '@/components/Spinner'
 interface ContactCountProps {
   description: string
 }
-const MAX_QUOTA = 20;
 
 const ContactCount = ({ description }: ContactCountProps) => {
   const [count, setCount] = useState(0)
@@ -23,45 +22,48 @@ const ContactCount = ({ description }: ContactCountProps) => {
     const fetchContactCount = async () => {
       try {
         // Récupérer l'ID de l'utilisateur connecté  
-        const { data: { user } } = await supabase.auth.getUser();
-  
+        const { data: { user } } = await supabase.auth.getUser()
+        
         if (user) {
           // Compter les contacts pour cet utilisateur
-          const { count } = await supabase
+          const { count, error } = await supabase
             .from('contacts')
             .select('*', { count: 'exact', head: true })
-            .eq('user_id', user.id);
-  
-          setCount(Math.min(count ?? 0, MAX_QUOTA));
+            .eq('user_id', user.id)
+          
+          if (error) {
+            setError('Failed to fetch contact count');
+          } else {
+            setCount(Math.min(count ?? 0));
+          }
         }
       } catch (err) {
         setError('Failed to fetch contact count');
       } finally {
         setLoading(false);
       }
-    };
-  
+    }
+
     fetchContactCount();
-  
+
     // Souscrire aux changements en temps réel pour les contacts
     const contactListener = supabase
       .channel('public:contacts')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'contacts' },
+        { event: '*', schema: 'public', table: 'contacts' },
         () => {
-          fetchContactCount(); // Appeler la fonction
+          fetchContactCount(); // Appeler la fonction pour récupérer le nouveau nombre de contacts
           setLoading(true); // Afficher le spinner pendant le chargement
         }
       )
       .subscribe();
-  
+
     // Nettoyer l'abonnement lors du démontage du composant
     return () => {
       contactListener.unsubscribe();
     };
-  }, []);
-  
+  }, [])
 
   if (loading) {
     return <Spinner size="large">Loading the number of contacts...</Spinner>
@@ -82,7 +84,7 @@ const ContactCount = ({ description }: ContactCountProps) => {
           <div className="text-xs text-muted-foreground">{description}</div>
         </CardContent>
         <CardFooter>
-        <Progress value={count} max={MAX_QUOTA} aria-label="Contact count" />  
+        <Progress value={count} aria-label="Contact count" />  
         </CardFooter>
       </Card>
     </ErrorBoundary>

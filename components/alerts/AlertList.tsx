@@ -29,6 +29,17 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from 'next/navigation';
 import { ErrorBoundary } from '../ErrorBoundary';
 import AlertTrigger from './AlertTrigger';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+  } from "@/components/ui/alert-dialog"
 
 interface AlertListProps {
     onAlertClick: (alert: any) => void;
@@ -41,6 +52,8 @@ interface AlertListProps {
     const [sortBy, setSortBy] = useState('last_updated');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [alertToDelete, setAlertToDelete] = useState<string | null>(null);
+
 
     const handleSortByChange = (value: string) => {
         setSortBy(value);
@@ -169,23 +182,48 @@ interface AlertListProps {
     }
     };
        
-      const deleteAlert = async (alertId: string) => {
-        // Logique pour supprimer l'alerte avec l'ID spécifié
-        const { error } = await supabase
-          .from('alerts')
-          .delete()
-          .eq('id', alertId);
-      
-        if (error) {
-          console.error('Error deleting alert:', error);
-        } else {
-          setAlerts(alerts.filter((alert) => alert.id !== alertId));
+    const deleteAlert = async (alertId: string) => {
+        setAlertToDelete(alertId);
+      };
+    
+      const handleConfirmDelete = async () => {
+        if (alertToDelete) {
+          const { error } = await supabase
+            .from('alerts')
+            .delete()
+            .eq('id', alertToDelete);
+    
+          if (error) {
+            console.error('Error deleting alert:', error);
+          } else {
+            setAlerts(alerts.filter((alert) => alert.id !== alertToDelete));
+            setAlertToDelete(null);
+          }
         }
       };
     
-
+      const handleCancelDelete = () => {
+        setAlertToDelete(null);
+      };
     return (
         <ErrorBoundary>
+           <AlertDialog open={alertToDelete !== null} onOpenChange={handleCancelDelete}>
+                <AlertDialogTrigger>
+                {/* Rien à afficher ici, le déclencheur est géré par le bouton "Delete" */}
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                    This action will permanently remove the alert from your list. This operation is irreversible.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleConfirmDelete}>Confirm</AlertDialogAction>
+                </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog> 
         <Tabs defaultValue="all" onValueChange={(value) => setFilter(value)}>
             <div className="flex items-center">
                 <TabsList>
@@ -311,8 +349,10 @@ interface AlertListProps {
                                                 <DropdownMenuItem onClick={() => openAlert(alert.id, alert.alert_name)}>Open</DropdownMenuItem>
                                                 <DropdownMenuItem onClick={() => duplicateAlert(alert.id)}>Duplicate</DropdownMenuItem>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem className='text-destructive' onClick={() => deleteAlert(alert.id)}>Delete</DropdownMenuItem>
-                                            </DropdownMenuContent>
+                                                <DropdownMenuItem className='text-destructive' onClick={() => deleteAlert(alert.id)}>
+                                                    Delete
+                                                </DropdownMenuItem>
+                                                </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
                                     </TableRow>
@@ -396,8 +436,10 @@ interface AlertListProps {
                                                 <DropdownMenuItem onClick={() => openAlert(alert.id, alert.alert_name)}>Open</DropdownMenuItem>
                                                 <DropdownMenuItem onClick={() => duplicateAlert(alert.id)}>Duplicate</DropdownMenuItem>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => deleteAlert(alert.id)}>Delete</DropdownMenuItem>
-                                            </DropdownMenuContent>
+                                                <DropdownMenuItem className='text-destructive' onClick={() => deleteAlert(alert.id)}>
+                                                    Delete
+                                                </DropdownMenuItem>
+                                                </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
                                     </TableRow>
@@ -474,8 +516,10 @@ interface AlertListProps {
                                                 <DropdownMenuItem onClick={() => openAlert(alert.id, alert.alert_name)}>Open</DropdownMenuItem>
                                                 <DropdownMenuItem onClick={() => duplicateAlert(alert.id)}>Duplicate</DropdownMenuItem>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => deleteAlert(alert.id)}>Delete</DropdownMenuItem>
-                                            </DropdownMenuContent>
+                                                <DropdownMenuItem className='text-destructive' onClick={() => deleteAlert(alert.id)}>
+                                                    Delete
+                                                </DropdownMenuItem>
+                                                </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
                                     </TableRow>
