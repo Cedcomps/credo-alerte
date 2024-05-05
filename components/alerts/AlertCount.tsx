@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Progress } from "@/components/ui/progress"
 import { ErrorBoundary } from "../ErrorBoundary"
 import { createClient } from "@/utils/supabase/client"
-import { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react';
 import ErrorMessage from '@/components/ErrorMessage'
 import { Spinner } from '@/components/Spinner'
 import { Bell } from "lucide-react"

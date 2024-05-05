@@ -53,12 +53,11 @@ interface AlertListProps {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [alertToDelete, setAlertToDelete] = useState<string | null>(null);
-
+    const [refreshAlertCount, setRefreshAlertCount] = useState(false);
 
     const handleSortByChange = (value: string) => {
         setSortBy(value);
     };
-    
       
     useEffect(() => {
         const fetchAlerts = async () => {
