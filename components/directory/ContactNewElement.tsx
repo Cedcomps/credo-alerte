@@ -27,10 +27,12 @@ export default function ContactNewElement() {
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState<string | undefined>()
   const [groupName, setGroupName] = useState("");
+  const [groupDescription, setGroupDescription] = useState("");
   const [isContact, setIsContact] = useState(false);
   const { toast } = useToast();
   const [emailError, setEmailError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
+  const [groupNameError, setGroupNameError] = useState("");
 
   const handleCreateNewContactClick = () => {
     setIsContact(true);
@@ -66,6 +68,13 @@ export default function ContactNewElement() {
         isValid = false;
       } else {
         setEmailError("");
+      }
+    } else {
+      if (groupName.trim() === "") {
+        setGroupNameError("Group name is required.");
+        isValid = false;
+      } else {
+        setGroupNameError("");
       }
     }
 
@@ -106,7 +115,11 @@ export default function ContactNewElement() {
     } else {
       const { data, error } = await supabase
         .from("groups")
-        .insert([{ name: groupName }]);
+        .insert([{ 
+          user_id: user.id,
+          group_name: groupName,
+          group_description: groupDescription
+        }]);
 
       if (error) {
         console.error("Error creating group:", error);
@@ -128,8 +141,10 @@ export default function ContactNewElement() {
     setContactEmail("");
     setContactPhone("");
     setGroupName("");
+    setGroupDescription("");
     setEmailError("");
     setLastNameError("");
+    setGroupNameError("");
   };
 
   return (
@@ -153,7 +168,7 @@ export default function ContactNewElement() {
               <SheetDescription>
                 {isContact
                   ? "Fill in the contact details and click save when you're done."
-                  : "Enter the group name and click save when you're done."}
+                  : "Enter the group details and click save when you're done."}
               </SheetDescription>
             </SheetHeader>
             <div className="grid gap-4 py-4">
@@ -222,17 +237,33 @@ export default function ContactNewElement() {
                   </div>
                 </>
               ) : (
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="groupName" className="text-right">
-                    Group Name
-                  </Label>
-                  <Input
-                    id="groupName"
-                    value={groupName}
-                    onChange={(e) => setGroupName(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
+                <>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="groupName" className="text-right">
+                      Group Name <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="col-span-3">
+                      <Input
+                        id="groupName"
+                        value={groupName}
+                        onChange={(e) => setGroupName(e.target.value)}
+                        className={groupNameError ? "border-red-500" : ""}
+                      />
+                      {groupNameError && <p className="text-red-500 text-sm mt-1">{groupNameError}</p>}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="groupDescription" className="text-right">
+                      Group Description
+                    </Label>
+                    <Input
+                      id="groupDescription"
+                      value={groupDescription}
+                      onChange={(e) => setGroupDescription(e.target.value)}
+                      className="col-span-3"
+                    />
+                  </div>
+                </>
               )}
             </div>
             <SheetFooter>
@@ -241,9 +272,16 @@ export default function ContactNewElement() {
                   Cancel
                 </Button>
               </SheetClose>
-              <Button type="submit" onClick={handleSaveContact} disabled={isContact && (!contactLastName || !validateEmail(contactEmail))}>
-                  Save
-                </Button>
+              <Button
+                type="submit"
+                onClick={handleSaveContact}
+                disabled={
+                  (isContact && (!contactLastName || !validateEmail(contactEmail))) ||
+                  (!isContact && !groupName)
+                }
+              >
+                Save
+              </Button>
               </SheetFooter>
           </SheetContent>
         </Sheet>

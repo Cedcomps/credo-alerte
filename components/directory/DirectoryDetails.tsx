@@ -1,3 +1,4 @@
+// DirectoryDetails.tsx
 import React from "react";
 import { Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,7 @@ import { Separator } from '@/components/ui/separator'
 import { ErrorBoundary } from "../ErrorBoundary";
 import EditContact from "./EditContact";
 import EditGroup from "./EditGroup";
+
 
 interface DirectoryDetailsProps {
   selectedContact: any;
@@ -35,7 +37,6 @@ export default function DirectoryDetails({ selectedContact }: DirectoryDetailsPr
       </Card>
     );
   }
-
   const isGroup = 'group_name' in selectedContact;
 
   return (
@@ -66,28 +67,20 @@ export default function DirectoryDetails({ selectedContact }: DirectoryDetailsPr
             )}
           </div>
         </CardHeader>
+        
         <CardContent className="p-6 text-sm">
           <div className="grid gap-3">
-            <div className="font-semibold">{isGroup ? 'Group Details' : 'Contact Details'}</div>
-            {isGroup ? (
-              <ul className="grid gap-3">
-                <li className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Number of contacts</span>
-                  <span>{selectedContact.contact_count[0].count}</span>
-                </li>
-              </ul>
-            ) : (
-              <ul className="grid gap-3">
-                <li className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Email</span>
-                  <span>{selectedContact.contact_email}</span>
-                </li>
-                <li className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Phone</span>
-                  <span>{selectedContact.contact_phone}</span>
-                </li>
-              </ul>
-            )}
+            <div className="font-semibold">Contact Details</div>
+            <ul className="grid gap-3">
+              <li className="flex items-center justify-between">
+                <span className="text-muted-foreground">Email</span>
+                <span>{selectedContact.contact_email}</span>
+              </li>
+              <li className="flex items-center justify-between">
+                <span className="text-muted-foreground">Phone</span>
+                <span>{selectedContact.contact_phone}</span>
+              </li>
+            </ul>
             <Separator className="my-2" />
             <ul className="grid gap-3">
               <li className="flex items-center justify-between">

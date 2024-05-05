@@ -7,9 +7,10 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import ContactCount from "@/components/directory/ContactCount";
 import ContactNewElement from "@/components/directory/ContactNewElement";
 
+
 export default function DashboardDirectory() {
   const [selectedContact, setSelectedContact] = useState(null);
-
+  
   const handleContactClick = (contact: any) => {
     setSelectedContact(contact);
   };
